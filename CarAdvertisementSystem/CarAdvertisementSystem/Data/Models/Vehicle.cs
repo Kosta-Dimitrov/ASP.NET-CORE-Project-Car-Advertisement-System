@@ -16,6 +16,8 @@ namespace CarAdvertisementSystem.Data.Models
 
         public int Price { get; set; }
 
+        public int HorsePower { get; set; }
+
         public int Doors { get; set; }
 
         [Required]
