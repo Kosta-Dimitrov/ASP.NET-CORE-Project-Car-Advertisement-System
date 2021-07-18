@@ -5,10 +5,8 @@
     public class Type
     {
         public int Id { get; set; }
-
         [Required]
         public string Name { get; set; }
-
         public IEnumerable<Vehicle> Vehicles { get; set; } = new List<Vehicle>();
     }
 }

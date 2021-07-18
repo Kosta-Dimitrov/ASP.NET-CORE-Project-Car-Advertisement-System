@@ -11,7 +11,6 @@
         [Required]
         [MaxLength(CountryNameMaxLength)]
         public string Name { get; set; }
-
         public IEnumerable<Brand> Brands { get; set; } = new List<Brand>();
     }
 }

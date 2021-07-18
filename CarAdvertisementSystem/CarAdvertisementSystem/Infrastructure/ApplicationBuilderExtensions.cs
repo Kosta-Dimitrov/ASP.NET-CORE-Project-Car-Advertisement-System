@@ -16,7 +16,10 @@
             var data=scopedService.ServiceProvider.GetService<CarAdvertisementDbContext>();
 
             SeedCountries(data);
+
             SeedFuel(data);
+
+            SeedTypes(data);
             data.Database.Migrate();
             return app;
         }

@@ -7,6 +7,7 @@ namespace CarAdvertisementSystem.Data.Models
     {
         [Key]
         public int Id { get; set; }
+
         [Required]
         [MaxLength(ModelMaxLength)]
         public string Model { get; set; }
@@ -15,28 +16,22 @@ namespace CarAdvertisementSystem.Data.Models
         public string Description { get; set; }
 
         public int Price { get; set; }
-
         public int HorsePower { get; set; }
-
         public int Doors { get; set; }
 
         [Required]
         public string ImageUrl { get; set; }
 
         public string Color { get; set; }
-
         public int Year { get; set; }
 
         public Fuel Fuel { get; set; }
-
         public int FuelId { get; set; }
 
         public Type Type { get; set; }
-
         public int TypeId { get; set; }
 
         public Brand Brand { get; set; }
-
         public int BrandId { get; set; }
     }
 }
