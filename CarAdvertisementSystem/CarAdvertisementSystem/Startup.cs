@@ -1,6 +1,7 @@
 namespace CarAdvertisementSystem
 {
     using CarAdvertisementSystem.Data;
+    using CarAdvertisementSystem.Infrastructure;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Identity;
@@ -17,7 +18,7 @@ namespace CarAdvertisementSystem
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<ApplicationDbContext>(options =>
+            services.AddDbContext<CarAdvertisementDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
             services.AddDatabaseDeveloperPageExceptionFilter();
@@ -31,12 +32,13 @@ namespace CarAdvertisementSystem
                 options.Password.RequireUppercase = false;
                 
             })
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+                .AddEntityFrameworkStores<CarAdvertisementDbContext>();
             services.AddControllersWithViews();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.PrepareDatabase();
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -62,6 +64,8 @@ namespace CarAdvertisementSystem
                     pattern: "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
             });
+
+
         }
     }
 }
