@@ -25,7 +25,22 @@
         [HttpPost]
         public IActionResult Add(AddVehicleFormModel vehicle)
         {
-            return View();
+            if (vehicle.Doors>0&&vehicle.TypeId==3)
+            {
+                ModelState.AddModelError(nameof(vehicle.Doors), "Motor cannot have doors");
+            }
+            if (vehicle.Doors==0&&vehicle.TypeId!=3)
+            {
+                ModelState.AddModelError(nameof(vehicle.Doors), $"Vehicle of type {vehicle.TypeId} has at least 1 door");
+            }
+            if (!ModelState.IsValid)
+            {
+                vehicle.Brands = this.GetBrands(data);
+                vehicle.Types = this.GetTypes(data);
+                vehicle.Fuels = this.GetFuels(data);
+                return View(vehicle);
+            }
+            return RedirectToAction("Index", "Home");
         }
 
         private IEnumerable<VehicleTypeViewModel> GetTypes(CarAdvertisementDbContext data)
