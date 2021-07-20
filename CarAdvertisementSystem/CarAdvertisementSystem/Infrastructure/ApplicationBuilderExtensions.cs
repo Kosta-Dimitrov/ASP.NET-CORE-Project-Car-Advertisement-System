@@ -20,6 +20,7 @@
             SeedFuel(data);
 
             SeedTypes(data);
+            SeedBrands(data);
             data.Database.Migrate();
             return app;
         }
@@ -79,6 +80,51 @@
                     new Type{Name="Motor"},
                     new Type{Name="Bus"},
                     new Type{Name="Caravan"}
+                });
+                data.SaveChanges();
+            }
+        }
+
+        private static void SeedBrands(CarAdvertisementDbContext data)
+        {
+            if (data.Brands.Any())
+            {
+                return;
+            }
+            else
+            {
+                data.Brands.AddRange(new Brand[]
+                {
+                    new Brand
+                    {
+                        CountryId=1,
+                        Name="Mercedes-Benz"
+                    },
+                    new Brand
+                    {
+                        CountryId=1,
+                        Name="Audi"
+                    },
+                    new Brand
+                    {
+                        CountryId=1,
+                        Name="Volkswagen"
+                    },
+                    new Brand
+                    {
+                        CountryId=5,
+                        Name="Ferrari"
+                    },
+                    new Brand
+                    {
+                        CountryId=3,
+                        Name="Bentley"
+                    },
+                    new Brand
+                    {
+                        CountryId=6,
+                        Name="Peugeot"
+                    },
                 });
                 data.SaveChanges();
             }
