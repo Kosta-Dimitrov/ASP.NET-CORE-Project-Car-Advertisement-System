@@ -7,5 +7,6 @@
         public string Model { get; set; }
         public string ImageUrl { get; set; }
         public string Fuel { get; set; }
+        public int TotalVehicles { get; set; }
     }
 }

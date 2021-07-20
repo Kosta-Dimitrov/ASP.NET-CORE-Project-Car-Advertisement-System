@@ -4,6 +4,7 @@
     using CarAdvertisementSystem.Data.Models;
     using CarAdvertisementSystem.Models.Vehicle;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.EntityFrameworkCore;
     using System.Collections.Generic;
     using System.Linq;
 
@@ -14,26 +15,37 @@
         public VehicleController(CarAdvertisementDbContext data)
             => this.data = data;
 
-        public IActionResult All(string brand,string searchTerm)
+        public IActionResult All([FromQuery]AllVehiclesViewModel model)
         {
             List<Vehicle> vehiclesQuery = data.
                 Vehicles.
+                Include(v=>v.Brand).
+                Include(v=>v.Fuel).
                 ToList();
 
-            if (!string.IsNullOrWhiteSpace(brand))
+            if (!string.IsNullOrWhiteSpace(model.Brand))
             {
                 vehiclesQuery = vehiclesQuery.
-                    Where(v => v.Brand.Name == brand).
+                    Where(v => v.Brand.Name == model.Brand).
                     ToList();
             }
-            if (!string.IsNullOrWhiteSpace(searchTerm))
+            if (!string.IsNullOrWhiteSpace(model.SearchTerm))
             {
                 vehiclesQuery= vehiclesQuery = data.Vehicles.Where
-                    (v=>(v.Brand.Name.ToLower()+" "+v.Model.ToLower()).Contains(searchTerm.ToLower())||
-                    v.Description.ToLower().Contains(searchTerm.ToLower())).
+                    (v=>(v.Brand.Name.ToLower()+" "+v.Model.ToLower()).Contains(model.SearchTerm.ToLower())||
+                    v.Description.ToLower().Contains(model.SearchTerm.ToLower())).
                     ToList();
             }
+            switch(model.Sorting)
+            {
+                case VehicleSorting.Id:vehiclesQuery.OrderByDescending(v => v.Id);break;
+                case VehicleSorting.Price:vehiclesQuery.OrderByDescending(v => v.Price);break;
+                case VehicleSorting.Year:vehiclesQuery.OrderByDescending(v => v.Year);break;
+                default:break;
+            }
             List<VehicleListingViewModel> vehicles = vehiclesQuery.
+                Skip((model.CurrentPage-1)*AllVehiclesViewModel.VehiclesPerPage).
+                Take(AllVehiclesViewModel.VehiclesPerPage).
                 Select(v => new VehicleListingViewModel
               {
                   Fuel = v.Fuel.Name,
@@ -45,21 +57,18 @@
                   Id=v.Id,
                   Year=v.Year
               }).ToList();
-            AllVehiclesViewModel viewModel = new AllVehiclesViewModel
-            {
-                Vehicles = vehicles,
-                Brands = data.
+            model.TotalVehicles = vehiclesQuery.Count();
+            model.Brands = data.
                 Brands.
                 Select(b => b.Name).
                 OrderBy(b => b).
-                ToList(),
-                Fuels = data.
+                ToList();
+            model.Fuels = data.
                 Fuels.
                 Select(f => f.Name).
-                ToList(),
-                SearchTerm=searchTerm
-            };
-            return View(viewModel);
+                ToList();
+            model.Vehicles = vehicles;
+            return View(model);
         }
 
         public IActionResult Add() => View(new AddVehicleFormModel()
