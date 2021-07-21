@@ -18,6 +18,7 @@ namespace CarAdvertisementSystem.Data.Models
         public int Price { get; set; }
         public int HorsePower { get; set; }
         public int Doors { get; set; }
+        public int Kilometers { get; set; }
 
         [Required]
         public string ImageUrl { get; set; }
@@ -33,5 +34,9 @@ namespace CarAdvertisementSystem.Data.Models
 
         public Brand Brand { get; set; }
         public int BrandId { get; set; }
+
+        public int SellerId { get; set; }
+        public Seller Seller { get; set; }
+
     }
 }

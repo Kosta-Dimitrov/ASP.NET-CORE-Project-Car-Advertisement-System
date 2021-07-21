@@ -2,6 +2,7 @@
 namespace CarAdvertisementSystem.Data
 {
     using CarAdvertisementSystem.Data.Models;
+    using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore;
     public class CarAdvertisementDbContext : IdentityDbContext
@@ -39,6 +40,18 @@ namespace CarAdvertisementSystem.Data
                 .HasForeignKey(b => b.CountryId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            builder.Entity<Vehicle>()
+                .HasOne(v => v.Seller)
+                .WithMany(s => s.Vehicles)
+                .HasForeignKey(v=>v.SellerId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Seller>()
+                .HasOne<IdentityUser>()
+                .WithOne()
+                .HasForeignKey<Seller>(s => s.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
 
             base.OnModelCreating(builder);
              
@@ -48,5 +61,6 @@ namespace CarAdvertisementSystem.Data
         public DbSet<Country> Countries { get; set; }
         public DbSet<Fuel> Fuels { get; set; }
         public DbSet<Type> Types { get; set; }
+        public DbSet<Seller> Sellers { get; set; }
     }
 }

@@ -25,5 +25,11 @@
         {
             public const int CountryNameMaxLength = 25;
         }
+
+        public class Seller
+        {
+            public const int SellerNameMaxLength= 20;
+            public const int SellerPhoneNumberMaxLength = 15;
+        }
     }
 }
