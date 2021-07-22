@@ -3,10 +3,12 @@
     using CarAdvertisementSystem.Data;
     using CarAdvertisementSystem.Data.Models;
     using CarAdvertisementSystem.Models.Vehicle;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Security.Claims;
 
     public class VehicleController : Controller
     {
@@ -71,16 +73,42 @@
             return View(model);
         }
 
-        public IActionResult Add() => View(new AddVehicleFormModel()
+        [Authorize]
+        public IActionResult Add()
         {
-            Types=this.GetTypes(data),
-            Brands=this.GetBrands(data),
-            Fuels=this.GetFuels(data)
-        });
+            string userId = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            bool isSeller = this.data.
+                Sellers.
+                Any(s => s.UserId == userId);
+            if (!isSeller)
+            {
+                return RedirectToAction("Create","Sellers");
+            }
+            return View(new AddVehicleFormModel
+            {
+                Types = this.GetTypes(data),
+                Brands = this.GetBrands(data),
+                Fuels = this.GetFuels(data)
+            });
+        }
 
         [HttpPost]
+        [Authorize]
         public IActionResult Add(AddVehicleFormModel vehicle)
         {
+            string userId = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            bool isSeller = this.data.
+                Sellers.
+                Any(s => s.UserId == userId);
+            int sellerId = this.data
+                .Sellers
+                .Where(s => s.UserId == userId)
+                .Select(s => s.Id)
+                .FirstOrDefault();
+            if (!isSeller)
+            {
+                return RedirectToAction("Create", "Sellers");
+            }
             vehicle.Types = this.GetTypes(data);
             if (vehicle.Doors>0&&vehicle.TypeId==3)
             {
@@ -111,7 +139,8 @@
                     ImageUrl=vehicle.ImageUrl,
                     Year=vehicle.Year,
                     FuelId=vehicle.FuelId,
-                    TypeId=vehicle.TypeId
+                    TypeId=vehicle.TypeId,
+                    SellerId=sellerId
                 };
                 this.data.Vehicles.Add(vehicleData);
                 this.data.SaveChanges();

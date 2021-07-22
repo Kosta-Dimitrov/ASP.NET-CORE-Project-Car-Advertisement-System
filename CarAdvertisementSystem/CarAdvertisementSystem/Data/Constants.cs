@@ -29,6 +29,7 @@
         public class Seller
         {
             public const int SellerNameMaxLength= 20;
+            public const int SellerNameMinLength = 3;
             public const int SellerPhoneNumberMaxLength = 15;
         }
     }
