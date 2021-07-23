@@ -8,7 +8,7 @@
     using static CarAdvertisementSystem.Data.Constants.Vehicle;
     public class AddVehicleFormModel
     {
-        [Required(ErrorMessage = "Model name should be between 2 and 20 symbols")]
+        [Required]
         [StringLength(ModelMaxLength,MinimumLength=ModelMinLength,ErrorMessage ="Model name should be between {2} and {1} symbols")]
         public string Model { get; set; }
         [Required]

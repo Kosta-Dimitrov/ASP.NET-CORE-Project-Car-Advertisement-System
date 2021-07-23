@@ -1,0 +1,16 @@
+﻿@model AddCountryFormModel
+
+@{
+    ViewData["Title"] = "Add new country";
+}
+
+<form method="post">
+    <div class="form-group">
+        <div class="col-md-4">
+            <label asp-for="Name"></label>
+            <input asp-for="Name" class="form-control" placeholder="Name of the country">
+            <span asp-validation-for="Name" class="small text-danger"></span>
+            <input class="btn btn-primary mt-3" type="submit" value="Save" />
+        </div>
+   </div>
+</form>

@@ -23,6 +23,7 @@
         
         public class Country
         {
+            public const int CountryNameMinLength = 3;
             public const int CountryNameMaxLength = 25;
         }
 
