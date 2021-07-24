@@ -1,0 +1,22 @@
+﻿@model AddBrandFormModel
+
+@{
+    ViewData["Title"] = "Add new brand";
+}
+<form method="post">
+    <div class="form-group">
+        <label asp-for="Name"></label>
+        <input asp-for="Name" class="form-control" placeholder="Brand name">
+        <span asp-validation-for="Name" class="small text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="CountryId"></label>
+        <select asp-for="CountryId" class="form-control">
+            @foreach (var country in Model.Countries)
+            {
+                <option value="@country.Id">@country.Name</option>
+            }
+        </select>
+        <input class="btn btn-primary mt-3" type="submit" value="Save" />
+    </div>
+</form>

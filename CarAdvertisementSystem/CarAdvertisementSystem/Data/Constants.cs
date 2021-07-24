@@ -33,5 +33,10 @@
             public const int SellerNameMinLength = 3;
             public const int SellerPhoneNumberMaxLength = 15;
         }
+
+        public class RegularExpressions
+        {
+            public const string StartWithUppercaseAndOnlySymbols = @"^[A-Z][A-Za-z]*";
+        }
     }
 }

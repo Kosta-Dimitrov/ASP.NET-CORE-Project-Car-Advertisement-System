@@ -6,12 +6,13 @@
     using CarAdvertisementSystem.Models.Country;
     using CarAdvertisementSystem.Data.Models;
     using System.Linq;
+    using System.Collections.Generic;
 
-    public class CountriesController:Controller
+    public class CountryController:Controller
     {
         private CarAdvertisementDbContext data;
 
-        public CountriesController(CarAdvertisementDbContext data)
+        public CountryController(CarAdvertisementDbContext data)
             => this.data = data;
 
         [Authorize]
@@ -40,8 +41,27 @@
                         .Add(countryData);
                     data.SaveChanges();
                 }
-                return RedirectToAction("All", "Countries");
+                return RedirectToAction("All", "Country");
             }
+        }
+        public IActionResult All()
+        {
+            List<CountryViewModel> allCountries = this.AllCountries();
+            AllCountriesViewModel viewModel = new AllCountriesViewModel();
+            allCountries.ForEach(c => viewModel.Countries.Add(c.Name, this.data.Brands.Where(b => b.Country.Name == c.Name).Count()));
+            return View(viewModel);
+        }
+
+        private List<CountryViewModel> AllCountries()
+        {
+            return this.data
+                .Countries
+                .Select(c => new CountryViewModel
+                {
+                    Id = c.Id,
+                    Name = c.Name
+                }).OrderBy(c => c.Name)
+                .ToList();
         }
     }
 }
