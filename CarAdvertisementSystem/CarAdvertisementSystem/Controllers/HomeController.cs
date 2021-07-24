@@ -3,7 +3,6 @@
     using CarAdvertisementSystem.Data;
     using CarAdvertisementSystem.Models;
     using CarAdvertisementSystem.Models.Home;
-    using CarAdvertisementSystem.Models.Vehicle;
     using Microsoft.AspNetCore.Mvc;
     using System.Collections.Generic;
     using System.Diagnostics;
@@ -52,8 +51,6 @@
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
+            => View();
     }
 }

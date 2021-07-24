@@ -1,6 +1,6 @@
 ﻿@model IndexViewModel
 @{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Welcome!";
 }
 @{
     List<VehicleIndexViewModel> vehicles = Model.Vehicles;
@@ -70,14 +70,19 @@
 <div class="mb-5"></div>
 <div class="jumbotron">
     <div class="row">
-        <h2 class="col-md-4 text-center">
-            @Model.TotalVehicles Vehicles
+        <h2 class="col-md-4 text-center" style="color:black">
+            <a asp-controller="Vehicle" asp-action="All" style="color:black">
+                @Model.TotalVehicles Vehicles
+            </a>
         </h2>
         <h2 class="col-md-4 text-center">
-            @Model.TotalUsers Users
+            @Model.TotalUsers
+            Users
         </h2>
         <h2 class="col-md-4 text-center">
-            @Model.TotalBrands Brands
-        </h2>
+             <a asp-controller="Brand" asp-action="All" style="color:black">
+                     @Model.TotalBrands Brands
+             </a>
+         </h2>
     </div>
 </div>

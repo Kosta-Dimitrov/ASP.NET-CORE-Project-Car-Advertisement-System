@@ -8,11 +8,11 @@
     using System.Linq;
     using System.Security.Claims;
 
-    public class SellersController:Controller
+    public class SellerController:Controller
     {
         private CarAdvertisementDbContext data;
 
-        public SellersController(CarAdvertisementDbContext data)
+        public SellerController(CarAdvertisementDbContext data)
         {
             this.data = data;
         }
