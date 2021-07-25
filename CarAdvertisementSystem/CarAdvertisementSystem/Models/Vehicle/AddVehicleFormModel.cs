@@ -32,6 +32,9 @@
         [Range(MinYearValue,MaxYearValue,ErrorMessage ="Year of manifacture should be between {1} and {2}")]
         public int Year { get; set; }
 
+        [Range(0,VehicleMaxKilometers,ErrorMessage ="Vehicle's kilometers should be between {1} and {2}")]
+        public int Kilometers { get; set; }
+
         [Display(Name = "Type")]
         public int TypeId { get; set; }
         public IEnumerable<VehicleTypeViewModel> Types { get; set; }

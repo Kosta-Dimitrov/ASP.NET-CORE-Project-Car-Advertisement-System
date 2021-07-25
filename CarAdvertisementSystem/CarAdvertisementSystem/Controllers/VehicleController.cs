@@ -33,16 +33,16 @@
             }
             if (!string.IsNullOrWhiteSpace(model.SearchTerm))
             {
-                vehiclesQuery= vehiclesQuery = data.Vehicles.Where
+                vehiclesQuery = vehiclesQuery.Where
                     (v=>(v.Brand.Name.ToLower()+" "+v.Model.ToLower()).Contains(model.SearchTerm.ToLower())||
                     v.Description.ToLower().Contains(model.SearchTerm.ToLower())).
                     ToList();
             }
             switch(model.Sorting)
             {
-                case VehicleSorting.Id:vehiclesQuery.OrderByDescending(v => v.Id);break;
-                case VehicleSorting.Price:vehiclesQuery.OrderByDescending(v => v.Price);break;
-                case VehicleSorting.Year:vehiclesQuery.OrderByDescending(v => v.Year);break;
+                case VehicleSorting.Id:vehiclesQuery=vehiclesQuery.OrderByDescending(v => v.Id).ToList();break;
+                case VehicleSorting.Price: vehiclesQuery =vehiclesQuery.OrderByDescending(v => v.Price).ToList();break;
+                case VehicleSorting.Year: vehiclesQuery = vehiclesQuery.OrderByDescending(v => v.Year).ToList();break;
                 default:break;
             }
             List<VehicleListingViewModel> vehicles = vehiclesQuery.

@@ -13,6 +13,7 @@
             public const int VehicleMaxHorsepower = 675;
             public const int VehicleMinPrice = 100;
             public const int VehicleMaxPrice = 10_000_000;
+            public const int VehicleMaxKilometers = 1_000_000;
         }
 
         public class Brand
