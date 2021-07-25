@@ -2,6 +2,7 @@ namespace CarAdvertisementSystem
 {
     using CarAdvertisementSystem.Data;
     using CarAdvertisementSystem.Infrastructure;
+    using CarAdvertisementSystem.Services.Vehicle;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Identity;
@@ -34,6 +35,7 @@ namespace CarAdvertisementSystem
             })
                 .AddEntityFrameworkStores<CarAdvertisementDbContext>();
             services.AddControllersWithViews();
+            services.AddTransient<IVehicleService, VehicleService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

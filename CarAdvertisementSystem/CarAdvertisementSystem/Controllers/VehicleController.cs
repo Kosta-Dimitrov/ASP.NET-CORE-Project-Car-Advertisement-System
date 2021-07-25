@@ -3,6 +3,7 @@
     using CarAdvertisementSystem.Data;
     using CarAdvertisementSystem.Data.Models;
     using CarAdvertisementSystem.Models.Vehicle;
+    using CarAdvertisementSystem.Services.Vehicle;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
@@ -12,65 +13,80 @@
 
     public class VehicleController : Controller
     {
+        private IVehicleService service;
         private CarAdvertisementDbContext data;
 
-        public VehicleController(CarAdvertisementDbContext data)
-            => this.data = data;
+        public VehicleController(IVehicleService service, CarAdvertisementDbContext data)
+        {
+            this.service = service;
+            this.data = data;
+        }
 
         public IActionResult All([FromQuery]AllVehiclesViewModel model)
         {
-            List<Vehicle> vehiclesQuery = data.
-                Vehicles.
-                Include(v=>v.Brand).
-                Include(v=>v.Fuel).
-                ToList();
+            //List<Vehicle> vehiclesQuery = data.
+            //    Vehicles.
+            //    Include(v=>v.Brand).
+            //    Include(v=>v.Fuel).
+            //    ToList();
 
-            if (!string.IsNullOrWhiteSpace(model.Brand))
-            {
-                vehiclesQuery = vehiclesQuery.
-                    Where(v => v.Brand.Name == model.Brand).
-                    ToList();
-            }
-            if (!string.IsNullOrWhiteSpace(model.SearchTerm))
-            {
-                vehiclesQuery = vehiclesQuery.Where
-                    (v=>(v.Brand.Name.ToLower()+" "+v.Model.ToLower()).Contains(model.SearchTerm.ToLower())||
-                    v.Description.ToLower().Contains(model.SearchTerm.ToLower())).
-                    ToList();
-            }
-            switch(model.Sorting)
-            {
-                case VehicleSorting.Id:vehiclesQuery=vehiclesQuery.OrderByDescending(v => v.Id).ToList();break;
-                case VehicleSorting.Price: vehiclesQuery =vehiclesQuery.OrderByDescending(v => v.Price).ToList();break;
-                case VehicleSorting.Year: vehiclesQuery = vehiclesQuery.OrderByDescending(v => v.Year).ToList();break;
-                default:break;
-            }
-            List<VehicleListingViewModel> vehicles = vehiclesQuery.
-                Skip((model.CurrentPage-1)*AllVehiclesViewModel.VehiclesPerPage).
-                Take(AllVehiclesViewModel.VehiclesPerPage).
-                Select(v => new VehicleListingViewModel
-              {
-                  Fuel = v.Fuel.Name,
-                  Brand = v.Brand.Name,
-                  HorsePower = v.HorsePower,
-                  ImageUrl = v.ImageUrl,
-                  Model = v.Model,
-                  Price=v.Price,
-                  Id=v.Id,
-                  Year=v.Year
-              }).ToList();
-            model.TotalVehicles = vehiclesQuery.Count();
-            model.Brands = data.
-                Brands.
-                Select(b => b.Name).
-                OrderBy(b => b).
-                ToList();
-            model.Fuels = data.
-                Fuels.
-                Select(f => f.Name).
-                ToList();
-            model.Vehicles = vehicles;
-            return View(model);
+            //if (!string.IsNullOrWhiteSpace(model.Brand))
+            //{
+            //    vehiclesQuery = vehiclesQuery.
+            //        Where(v => v.Brand.Name == model.Brand).
+            //        ToList();
+            //}
+            //if (!string.IsNullOrWhiteSpace(model.SearchTerm))
+            //{
+            //    vehiclesQuery = vehiclesQuery.Where
+            //        (v=>(v.Brand.Name.ToLower()+" "+v.Model.ToLower()).Contains(model.SearchTerm.ToLower())||
+            //        v.Description.ToLower().Contains(model.SearchTerm.ToLower())).
+            //        ToList();
+            //}
+            //switch(model.Sorting)
+            //{
+            //    case VehicleSorting.Id:vehiclesQuery=vehiclesQuery.OrderByDescending(v => v.Id).ToList();break;
+            //    case VehicleSorting.Price: vehiclesQuery =vehiclesQuery.OrderByDescending(v => v.Price).ToList();break;
+            //    case VehicleSorting.Year: vehiclesQuery = vehiclesQuery.OrderByDescending(v => v.Year).ToList();break;
+            //    default:break;
+            //}
+            //List<VehicleListingViewModel> vehicles = vehiclesQuery.
+            //    Skip((model.CurrentPage-1)*AllVehiclesViewModel.VehiclesPerPage).
+            //    Take(AllVehiclesViewModel.VehiclesPerPage).
+            //    Select(v => new VehicleListingViewModel
+            //  {
+            //      Fuel = v.Fuel.Name,
+            //      Brand = v.Brand.Name,
+            //      HorsePower = v.HorsePower,
+            //      ImageUrl = v.ImageUrl,
+            //      Model = v.Model,
+            //      Price=v.Price,
+            //      Id=v.Id,
+            //      Year=v.Year
+            //  }).ToList();
+            //model.TotalVehicles = vehiclesQuery.Count();
+            model.Brands = this.service.VehicleBrands();//data. Brands.Select(b => b.Name).OrderBy(b => b).ToList();
+            model.Fuels = this.service.VehicleFuels();//data.Fuels.Select(f => f.Name).ToList();
+            VehicleQueryServiceModel queryResult = this.service
+                .All(model.Brand,
+                model.SearchTerm,
+                model.Sorting,
+                model.CurrentPage,
+                AllVehiclesViewModel.VehiclesPerPage);
+            model.Vehicles = queryResult.Vehicles
+                .Select(v=>new VehicleListingViewModel
+                {
+                    Id = v.Id,
+                    Brand = v.Brand,
+                    Fuel = v.Fuel,
+                    HorsePower = v.HorsePower,
+                    Model = v.Model,
+                    ImageUrl = v.ImageUrl,
+                    Price = v.Price,
+                    Year = v.Year
+                }).ToList();//vehicles;
+                model.TotalVehicles = queryResult.TotalVehicles;
+                return View(model);
         }
 
         [Authorize]
