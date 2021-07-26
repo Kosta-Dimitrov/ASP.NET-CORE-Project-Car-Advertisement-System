@@ -47,8 +47,8 @@
                 default: break;
             }
             List<VehicleListingViewModel> vehicles = vehiclesQuery.
-                Skip((currentPage - 1) *vehiclesPerPage).//AllVehicles.VehiclesPerPage
-                Take(vehiclesPerPage).//AllVehicles.VehiclesPerPage
+                Skip((currentPage - 1) *vehiclesPerPage).
+                Take(vehiclesPerPage).
                 Select(v => new VehicleListingViewModel
                 {
                     Fuel = v.Fuel.Name,
@@ -61,7 +61,7 @@
                     Year = v.Year
                 }).ToList();
 
-            int totalVehicles = vehiclesQuery.Count();//without query
+            int totalVehicles = vehiclesQuery.Count();
             List<VehicleServiceModel> vehiclesData = this.GetVehicles(vehicles);
             return new VehicleQueryServiceModel
             {
@@ -86,7 +86,23 @@
                 Select(f => f.Name).
                 ToList();
 
-        private  List<VehicleServiceModel> GetVehicles(List<VehicleListingViewModel> vehicles)//VehicleServicemodel
+        public List<VehicleServiceModel> VehiclesByUser(string userId)
+            => this.data
+            .Vehicles
+            .Where(v => v.Seller.UserId == userId)
+            .Select(v => new VehicleServiceModel
+            {
+                Fuel = v.Fuel.Name,
+                Brand = v.Brand.Name,
+                HorsePower = v.HorsePower,
+                ImageUrl = v.ImageUrl,
+                Model = v.Model,
+                Price = v.Price,
+                Id = v.Id,
+                Year = v.Year,
+            }).ToList();
+
+        private  List<VehicleServiceModel> GetVehicles(List<VehicleListingViewModel> vehicles)
                  => vehicles.Select(v => new VehicleServiceModel
                  {
                      Id = v.Id,

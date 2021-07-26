@@ -41,21 +41,23 @@
         </div>
     </div>
 </form>
-<div class="row">
-    @foreach (var vehicle in Model.Vehicles)
-    {
-        <div class="col-md-4">
-            <div class="card mb-3" style="width: 18rem;">
-                <img class="card-img-top" src="@vehicle.ImageUrl" alt=">@vehicle.Brand @vehicle.Model (@vehicle.Fuel) @vehicle.Price">
-                <div class="card-body">
-                    <h5 class="card-title">@vehicle.Brand @vehicle.Model</h5>
-                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                    <a asp-controller="Vehicles" asp-action="Details" asp-route-id="@vehicle.Id" class="btn btn-primary">Full information</a>
-                </div>
-            </div>
-        </div>
-    }
-</div>
+@{ 
+    VehicleService service;
+    List<VehicleServiceModel> vehicles = Model
+        .Vehicles
+        .Select(v=>new VehicleServiceModel
+        {
+            Id = v.Id,
+            Brand = v.Brand,
+            Fuel = v.Fuel,
+            HorsePower = v.HorsePower,
+            Model = v.Model,
+            ImageUrl = v.ImageUrl,
+            Price = v.Price,
+            Year = v.Year,
+        }).ToList();
+}
+<partial name="_ListingVehiclesPartial" model="@vehicles" />
 @{
     int previousPage = Model.CurrentPage - 1;
     previousPage = previousPage < 1 ? 1 : previousPage;

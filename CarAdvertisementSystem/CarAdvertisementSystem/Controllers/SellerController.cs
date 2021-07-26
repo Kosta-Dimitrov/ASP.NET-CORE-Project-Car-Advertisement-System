@@ -47,7 +47,7 @@
             };
             this.data.Sellers.Add(sellerData);
             this.data.SaveChanges();
-            return RedirectToAction("All","Vehicles");
+            return RedirectToAction("All","Vehicle");
         }
     }
 }

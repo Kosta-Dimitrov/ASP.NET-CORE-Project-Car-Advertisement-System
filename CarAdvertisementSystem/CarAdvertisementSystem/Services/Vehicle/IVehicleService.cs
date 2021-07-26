@@ -12,5 +12,6 @@
             int vehiclesPerPage);
         List<string> VehicleBrands();
         List<string> VehicleFuels();
+        List<VehicleServiceModel> VehiclesByUser(string userId);
     }
 }

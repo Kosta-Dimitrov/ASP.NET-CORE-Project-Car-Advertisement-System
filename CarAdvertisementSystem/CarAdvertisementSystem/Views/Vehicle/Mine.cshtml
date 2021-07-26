@@ -1,0 +1,12 @@
+﻿@model List<VehicleServiceModel>
+@{
+ ViewData["Title"] = "My vehicles";
+}
+@if (!Model.Any())
+{
+    <h2 class="text-center">You do not have any vehicles</h2>
+}
+else
+{
+    <partial name="_ListingVehiclesPartial" model="@Model" />
+}

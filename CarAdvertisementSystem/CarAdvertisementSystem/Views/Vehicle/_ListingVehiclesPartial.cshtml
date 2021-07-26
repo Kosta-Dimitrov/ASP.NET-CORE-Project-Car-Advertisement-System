@@ -1,0 +1,21 @@
+﻿@model List<VehicleServiceModel>
+<div class="row">
+    @foreach (var vehicle in Model)
+    {
+        <div class="col-md-4">
+            <div class="card mb-3" style="width: 18rem;">
+                <img class="card-img-top" src="@vehicle.ImageUrl" alt=">@vehicle.Brand @vehicle.Model (@vehicle.Fuel) @vehicle.Price">
+                <div class="card-body">
+                    <h5 class="card-title">@vehicle.Brand @vehicle.Model</h5>
+                    <p class="card-text">
+                        <div>@vehicle.Year Year</div>
+                        <div>@vehicle.Price $</div>
+                        <div>@vehicle.HorsePower horsepower</div>
+                        <div>@vehicle.Fuel</div>
+                    </p>
+                    <a asp-controller="Vehicles" asp-action="Details" asp-route-id="@vehicle.Id" class="btn btn-primary">Full information</a>
+                </div>
+            </div>
+        </div>
+    }
+</div>
