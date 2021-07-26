@@ -73,6 +73,102 @@
 
         }
 
+        public bool Edit(int id, string description, int brandId, string color, int doors, int fuelId, int horsePower, string imageUrl, int kilometers, string model, int price, int typeId, int year,int sellerId)
+        {
+            Vehicle vehicle = this.data.Vehicles.Find(id);
+            if (vehicle==null)
+            {
+                return false;
+            }
+            if (sellerId!=vehicle.SellerId)
+            {
+                return false;
+            }
+            vehicle.BrandId = brandId;
+            vehicle.Color = color;
+            vehicle.Description = description;
+            vehicle.Doors = doors;
+            vehicle.FuelId = fuelId;
+            vehicle.HorsePower = horsePower;
+            vehicle.ImageUrl = imageUrl;
+            vehicle.Kilometers = kilometers;
+            vehicle.Model = model;
+            vehicle.Price = price;
+            vehicle.TypeId = typeId;
+            vehicle.Year = year;
+            this.data.SaveChanges();
+            return true;
+        }
+
+        public IEnumerable<VehicleBrandViewModel> GetBrands()
+            =>data.Brands
+                   .Select(b => new VehicleBrandViewModel()
+                   {
+                       Id = b.Id,
+                       Name = b.Name
+                   })
+                   .OrderBy(b => b.Name)
+                   .ToList();
+
+        public IEnumerable<VehicleFuelViewModel> GetFuels()
+                => data.Fuels
+                   .Select(b => new VehicleFuelViewModel()
+                   {
+                       Id = b.Id,
+                       Name = b.Name
+                   }).ToList();
+
+        public IEnumerable<VehicleTypeViewModel> GetTypes()
+            => data.Types
+                   .Select(t => new VehicleTypeViewModel
+                   {
+                       Id = t.Id,
+                       Name = t.Name
+                   }).ToList();
+
+        public VehicleInfoServiceModel Info(int id)
+        => this.data.Vehicles.Where(v=>v.Id==id).Select(v => new VehicleInfoServiceModel
+        {
+            FuelId=v.FuelId,
+            FuelName=v.Fuel.Name,
+            Description=v.Description,
+            SellerId=v.SellerId,
+            BrandId=v.BrandId,
+            BrandName=v.Brand.Name,
+            Color=v.Color,
+            Doors=v.Doors,
+            HorsePower=v.HorsePower,
+            Id=v.Id,
+            ImageUrl=v.ImageUrl,
+            Kilometers=v.Kilometers,
+            Model=v.Model,
+            Price=v.Price,
+            TypeId=v.TypeId,
+            TypeName=v.Type.Name,
+            Year=v.Year,
+            UserId=v.Seller.UserId
+        }).FirstOrDefault();
+
+        public bool IsBySeller(int id, int vehicleId)
+        => this.data
+              .Vehicles
+              .Any(v => v.Id == vehicleId && v.SellerId == id);
+
+        public bool ValidBrand(int id)
+        => this.data
+                .Brands
+                .Any(b => b.Id == id);
+
+        public bool ValidFuel(int id)
+        => this.data
+               .Fuels
+                .Any(f => f.Id == id);
+
+        public bool ValidType(int id)
+        => this.data
+               .Types
+               .Any(t => t.Id == id);
+
         public List<string> VehicleBrands()
             => data.
                 Brands.
@@ -92,8 +188,8 @@
             .Where(v => v.Seller.UserId == userId)
             .Select(v => new VehicleServiceModel
             {
-                Fuel = v.Fuel.Name,
-                Brand = v.Brand.Name,
+                FuelName = v.Fuel.Name,
+                BrandName = v.Brand.Name,
                 HorsePower = v.HorsePower,
                 ImageUrl = v.ImageUrl,
                 Model = v.Model,
@@ -106,8 +202,8 @@
                  => vehicles.Select(v => new VehicleServiceModel
                  {
                      Id = v.Id,
-                     Brand = v.Brand,
-                     Fuel=v.Fuel,
+                     BrandName = v.Brand,
+                     FuelName=v.Fuel,
                      HorsePower=v.HorsePower,
                      Model=v.Model,
                      ImageUrl=v.ImageUrl,

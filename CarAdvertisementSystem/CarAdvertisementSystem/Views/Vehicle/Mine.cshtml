@@ -1,6 +1,7 @@
 ﻿@model List<VehicleServiceModel>
 @{
- ViewData["Title"] = "My vehicles";
+    ViewData["Title"] = "My vehicles";
+    ViewBag.AllowEditing = true;
 }
 @if (!Model.Any())
 {

@@ -1,0 +1,87 @@
+﻿@model AddVehicleFormModel
+
+
+<div class="row">
+    <div class="col-sm-12 offset-lg-2 col-lg-8 offset-xl-3 col-xl-6">
+        <form method="post">
+            <div class="form-group">
+                <label asp-for="Model">Model</label>
+                <input asp-for="Model" class="form-control" placeholder="Vehicle model">
+                <span asp-validation-for="Model" class="small text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Description">Description</label>
+                <textarea asp-for="Description" class="form-control" placeholder="Write your description here" rows="3"></textarea>
+                <span asp-validation-for="Description" class="small text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Price">Price</label>
+                <input asp-for="Price" class="form-control" placeholder="Price of the vehicle in euro">
+                <span asp-validation-for="Price" class="small text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Doors"></label>
+                <select asp-for="Doors" class="form-control">
+                    <option value="0">0</option>
+                    <option value="1">1</option>
+                    <option value="3">3</option>
+                    <option value="5">5</option>
+                </select>
+                <span asp-validation-for="Doors" class="small text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ImageUrl">Image URL</label>
+                <input asp-for="ImageUrl" class="form-control" placeholder="Image URL">
+                <span asp-validation-for="ImageUrl" class="small text-danger"></span>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-md-4">
+                        <label asp-for="HorsePower">Horse power</label>
+                        <input asp-for="HorsePower" class="form-control" placeholder="Horse power">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="Color">Color</label>
+                <input asp-for="Color" class="form-control" placeholder="Color of the vehicle">
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-md-4">
+                        <label asp-for="Year">Year</label>
+                        <input asp-for="Year" class="form-control" placeholder="Year of manifacture">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="TypeId"></label>
+                <select asp-for="TypeId" class="form-control">
+                    @foreach (var type in Model.Types)
+                    {
+                        <option value="@type.Id">@type.Name</option>
+                    }
+                </select>
+            </div>
+            <div class="form-group">
+                <label asp-for="BrandId"></label>
+                <select asp-for="BrandId" class="form-control">
+                    @foreach (var brand in Model.Brands)
+                    {
+                        <option value="@brand.Id">@brand.Name</option>
+                    }
+                </select>
+            </div>
+            <div class="form-group">
+                <label asp-for="FuelId"></label>
+                <select asp-for="FuelId" class="form-control">
+                    @foreach (var fuel in Model.Fuels)
+                    {
+                        <option value="@fuel.Id">@fuel.Name</option>
+                    }
+                </select>
+            </div>
+            <input class="btn btn-primary mt-3" type="submit" value="Save" />
+        </form>
+    </div>
+</div>

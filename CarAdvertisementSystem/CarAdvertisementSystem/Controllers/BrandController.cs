@@ -47,7 +47,6 @@
                     });
                     return RedirectToAction("All", "Brand");
                 }
-                //TODO ADD view if the brand is already in
             }
             newBrand.Countries = this.AllCountries();
             return View(newBrand);
