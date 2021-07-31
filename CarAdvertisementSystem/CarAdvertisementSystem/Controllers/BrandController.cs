@@ -8,9 +8,7 @@
     using CarAdvertisementSystem.Data.Models;
     using System.Collections.Generic;
     using CarAdvertisementSystem.Models.Country;
-    using CarAdvertisementSystem.Models.Vehicle;
     using Microsoft.EntityFrameworkCore;
-    using System;
 
     public class BrandController:Controller
     {
@@ -19,7 +17,7 @@
         public BrandController(CarAdvertisementDbContext data)=>
             this.data = data;
 
-        [Authorize]
+        [Authorize(Roles = "Administrator")]
         public IActionResult Add()
         {
             return View(new AddBrandFormModel
@@ -28,7 +26,7 @@
             });
         }
 
-        [Authorize]
+        [Authorize(Roles = "Administrator")]
         [HttpPost]
         public IActionResult Add(AddBrandFormModel newBrand)
         {

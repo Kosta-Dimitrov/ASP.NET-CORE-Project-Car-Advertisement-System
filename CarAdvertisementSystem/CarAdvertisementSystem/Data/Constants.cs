@@ -39,5 +39,11 @@
         {
             public const string StartWithUppercaseAndOnlySymbols = @"^[A-Z][A-Za-z]*";
         }
+
+        public class User
+        {
+            public const int UserNameMaxLength = 30;
+            public const int UserNameMinLength=4;
+        }
     }
 }

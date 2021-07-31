@@ -1,28 +1,30 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @using System.Security.Claims
 @using CarAdvertisementSystem.Services.Seller
-@inject SignInManager<IdentityUser> SignInManager
-@inject UserManager<IdentityUser> UserManager
+@using CarAdvertisementSystem.Data.Models
+@inject SignInManager<User> SignInManager
+@inject UserManager<User> UserManager
 @inject ISellerService SellerService
 
 <ul class="navbar-nav">
     @if (SignInManager.IsSignedIn(User))
-    { 
-            string userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            bool isSeller = SellerService.IsSeller(userId);
-            @if (isSeller)
+    {
+        string userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+        bool isSeller = SellerService.IsSeller(userId);
+        bool isAdmin = User.IsInRole("Administrator");
+        @if (isSeller&&!isAdmin)
             {
                 <li class="nav-item">
                     <a class="nav-link text-dark" asp-area="" asp-controller="Vehicle" asp-action="Mine">My vehicles</a>
                 </li>
             }
-            else
-	        {
-	                 
-                <li class="nav-item">
-                    <a class="nav-link text-dark" asp-area="" asp-controller="Seller" asp-action="Create">Become Seller</a>
-                </li>
-	        }
+        if (!isAdmin)
+        {
+
+               <li class="nav-item">
+                   <a class="nav-link text-dark" asp-area="" asp-controller="Seller" asp-action="Create">Become Seller</a>
+               </li>
+	    }
     <li class="nav-item">
         <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">My account</a>
     </li>

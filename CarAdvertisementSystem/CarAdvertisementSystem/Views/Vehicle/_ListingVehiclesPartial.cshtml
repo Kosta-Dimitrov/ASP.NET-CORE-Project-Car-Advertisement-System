@@ -14,7 +14,7 @@
                         <div>@vehicle.FuelName</div>
                     </p>
                     <a asp-controller="Vehicles" asp-action="Details" asp-route-id="@vehicle.Id" class="btn btn-primary">Full information</a>
-                    @if (ViewBag.AllowEditing == true)
+                    @if (ViewBag.AllowEditing == true||User.IsInRole("Administrator"))
                     {
                         <a asp-controller="Vehicle" asp-action="Edit" asp-route-id="@vehicle.Id" class="btn btn-info">Edit</a>
                         <a asp-controller="Vehicle" asp-action="Delete" asp-route-id="@vehicle.Id" class="btn btn-danger">Delete</a>

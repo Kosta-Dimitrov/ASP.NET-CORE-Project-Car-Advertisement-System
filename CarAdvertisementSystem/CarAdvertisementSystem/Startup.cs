@@ -1,6 +1,7 @@
 namespace CarAdvertisementSystem
 {
     using CarAdvertisementSystem.Data;
+    using CarAdvertisementSystem.Data.Models;
     using CarAdvertisementSystem.Infrastructure;
     using CarAdvertisementSystem.Services.Seller;
     using CarAdvertisementSystem.Services.Vehicle;
@@ -25,7 +26,7 @@ namespace CarAdvertisementSystem
                     Configuration.GetConnectionString("DefaultConnection")));
             services.AddDatabaseDeveloperPageExceptionFilter();
 
-            services.AddDefaultIdentity<IdentityUser>(options =>
+            services.AddDefaultIdentity<User>(options =>
             {
                 options.SignIn.RequireConfirmedAccount = false;
                 options.Password.RequireDigit = false;
@@ -34,6 +35,7 @@ namespace CarAdvertisementSystem
                 options.Password.RequireUppercase = false;
                 
             })
+                .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<CarAdvertisementDbContext>();
             services.AddControllersWithViews();
             services.AddTransient<IVehicleService, VehicleService>();

@@ -5,7 +5,7 @@ namespace CarAdvertisementSystem.Data
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore;
-    public class CarAdvertisementDbContext : IdentityDbContext
+    public class CarAdvertisementDbContext : IdentityDbContext<User>
     {
         public CarAdvertisementDbContext(DbContextOptions<CarAdvertisementDbContext> options)
             : base(options)
@@ -47,7 +47,7 @@ namespace CarAdvertisementSystem.Data
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.Entity<Seller>()
-                .HasOne<IdentityUser>()
+                .HasOne<User>()
                 .WithOne()
                 .HasForeignKey<Seller>(s => s.UserId)
                 .OnDelete(DeleteBehavior.Restrict);

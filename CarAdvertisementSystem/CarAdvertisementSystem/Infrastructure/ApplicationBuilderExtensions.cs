@@ -6,24 +6,64 @@
     using CarAdvertisementSystem.Data;
     using System.Linq;
     using CarAdvertisementSystem.Data.Models;
+    using System;
+    using Microsoft.AspNetCore.Identity;
+    using System.Threading.Tasks;
 
     public static class ApplicationBuilderExtensions
     {
         public static IApplicationBuilder PrepareDatabase(this IApplicationBuilder app)
         {
             using var scopedService = app.ApplicationServices.CreateScope();
+            var serviceProvider = scopedService.ServiceProvider;
 
-            var data=scopedService.ServiceProvider.GetService<CarAdvertisementDbContext>();
+            var data=serviceProvider.GetRequiredService<CarAdvertisementDbContext>();
 
             SeedCountries(data);
 
             SeedFuel(data);
 
             SeedTypes(data);
+
             SeedBrands(data);
+
+            SeedAdmiistrator(serviceProvider);
+
             data.Database.Migrate();
             return app;
         }
+
+        private static void SeedAdmiistrator( IServiceProvider service)
+        {
+            var userManager = service.GetRequiredService <UserManager<User>>();
+            var roleManager = service.GetRequiredService<RoleManager<IdentityRole>>();
+
+            Task.Run(async () =>
+            {
+                if (await roleManager.RoleExistsAsync("Administrator"))
+                {
+                    return;
+                }
+                var role = new IdentityRole
+                {
+                    Name = "Administrator"
+                };
+                await roleManager.CreateAsync(role);
+
+                var user = new User
+                {
+                    Email = "admin@cas.com",
+                    Name = "Administrator",
+                    UserName = "admin@cas.com"
+                };
+                await userManager.CreateAsync(user, "admin123");
+               await userManager.AddToRoleAsync(user, "Administrator");
+
+            })
+            .GetAwaiter()
+            .GetResult();
+        }
+
         private static void SeedCountries(CarAdvertisementDbContext data)
         {
             if (data.Countries.Any())
@@ -73,13 +113,13 @@
             }
             else
             {
-                data.Types.AddRange(new Type[]
+                data.Types.AddRange(new Data.Models.Type[]
                 {
-                    new Type{Name="Car"},
-                    new Type{Name="Truck"},
-                    new Type{Name="Motor"},
-                    new Type{Name="Bus"},
-                    new Type{Name="Caravan"}
+                    new Data.Models.Type{Name="Car"},
+                    new Data.Models.Type{Name="Truck"},
+                    new Data.Models.Type{Name="Motor"},
+                    new Data.Models.Type{Name="Bus"},
+                    new Data.Models.Type{Name="Caravan"}
                 });
                 data.SaveChanges();
             }

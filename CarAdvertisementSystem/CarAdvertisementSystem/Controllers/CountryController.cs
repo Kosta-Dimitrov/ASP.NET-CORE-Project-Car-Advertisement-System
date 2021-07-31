@@ -19,7 +19,7 @@
         public IActionResult Add()
             => View();
 
-        [Authorize]
+        [Authorize(Roles ="Administrator")]
         [HttpPost]
         public IActionResult Add(AddCountryFormModel newCountry)
         {
