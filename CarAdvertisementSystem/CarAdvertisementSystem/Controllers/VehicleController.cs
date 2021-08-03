@@ -17,11 +17,11 @@
         private ISellerService sellerService;
         private CarAdvertisementDbContext data;
 
-        public VehicleController(IVehicleService service, 
+        public VehicleController(IVehicleService vehicleService, 
             CarAdvertisementDbContext data,
             ISellerService sellerService)
         {
-            this.vehicleService = service;
+            this.vehicleService = vehicleService;
             this.data = data;
             this.sellerService = sellerService;
         }
@@ -30,11 +30,12 @@
         {
             
             model.Brands = this.vehicleService.VehicleBrands();
-            model.Fuels = this.vehicleService.VehicleFuels();
+            model.Types = this.vehicleService.GetTypesByName();
             VehicleQueryServiceModel queryResult = this.vehicleService
                 .All(model.Brand,
                 model.SearchTerm,
                 model.Sorting,
+                model.Type,
                 model.CurrentPage,
                 AllVehiclesViewModel.VehiclesPerPage);
             model.Vehicles = queryResult.Vehicles
@@ -57,18 +58,15 @@
         public IActionResult Add()
         {
             string userId = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            //bool isSeller = this.data.
-            //    Sellers.
-            //    Any(s => s.UserId == userId);
-            if (!this.sellerService.IsSeller(userId))
+            if (!this.sellerService.IsSeller(userId)&&!User.IsInRole("Administrator"))
             {
                 return RedirectToAction("Create","Seller");
             }
             return View(new AddVehicleFormModel
             {
-                Types = this.GetTypes(data),
-                Brands = this.GetBrands(data),
-                Fuels = this.GetFuels(data)
+                Types = this.vehicleService.GetTypes(),
+                Brands = this.vehicleService.GetBrands(),
+                Fuels = this.vehicleService.GetFuels()
             });
         }
 
@@ -82,11 +80,11 @@
                 .Where(s => s.UserId == userId)
                 .Select(s => s.Id)
                 .FirstOrDefault();
-            if (!sellerService.IsSeller(userId))
+            if (!sellerService.IsSeller(userId)&&!User.IsInRole("Administrator"))
             {
                 return RedirectToAction("Create", "Seller");
             }
-            vehicle.Types = this.GetTypes(data);
+            vehicle.Types = vehicleService.GetTypes();
             if (!this.vehicleService.ValidBrand(vehicle.BrandId))
             {
                 ModelState.AddModelError(nameof(vehicle.BrandId), "Brand does not exists");
@@ -141,11 +139,15 @@
         public IActionResult Edit(int id)
         {
             string userId = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            if (!this.sellerService.IsSeller(userId))
+            if (!this.sellerService.IsSeller(userId)&&!User.IsInRole("Administrator"))
             {
                 return RedirectToAction("Create", "Seller");
             }
             VehicleInfoServiceModel vehicleInfo = this.vehicleService.Info(id);
+            if (vehicleInfo==null)
+            {
+                return BadRequest();
+            }
             return View(new AddVehicleFormModel
             {
                 FuelId = vehicleInfo.FuelId,
@@ -172,8 +174,9 @@
         public IActionResult Edit(int id, AddVehicleFormModel vehicle)
         {
             string userId = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            int sellerId = this.data.Sellers.FirstOrDefault(s => s.UserId == userId).Id;
-            if (!this.sellerService.IsSeller(userId))
+            int sellerId = this.data.Sellers.Where(s => s.UserId == userId).Select(s=>s.Id).FirstOrDefault();
+            bool isAdmin = User.IsInRole("Administrator");
+            if (sellerId==0&& !isAdmin)
             {
                 return BadRequest();
             }
@@ -218,10 +221,15 @@
                 vehicle.Price,
                 vehicle.TypeId,
                 vehicle.Year,
-                sellerId);
+                sellerId,
+                isAdmin);
             if (!isVehicleEdited)
             {
                 return BadRequest();
+            }
+            else if (User.IsInRole("Administrator"))
+            {
+                return RedirectToAction("All", "Vehicle");
             }
             else
             {
@@ -235,38 +243,6 @@
             List<VehicleServiceModel> myVehicles = vehicleService.VehiclesByUser(myId);
             return View(myVehicles);
         }
-
-        private IEnumerable<VehicleTypeViewModel> GetTypes(CarAdvertisementDbContext data)
-        {
-            return data
-                   .Types
-                   .Select(t => new VehicleTypeViewModel
-                   {
-                       Id = t.Id,
-                       Name = t.Name
-                   }).ToList();
-        }
-        private IEnumerable<VehicleBrandViewModel> GetBrands(CarAdvertisementDbContext data)
-        {
-            return data
-                   .Brands
-                   .Select(b => new VehicleBrandViewModel()
-                   {
-                       Id = b.Id,
-                       Name = b.Name
-                   })
-                   .OrderBy(b=>b.Name)
-                   .ToList();
-        }
-        private IEnumerable<VehicleFuelViewModel> GetFuels(CarAdvertisementDbContext data)
-        {
-            return data
-                   .Fuels
-                   .Select(b => new VehicleFuelViewModel()
-                   {
-                       Id = b.Id,
-                       Name = b.Name
-                   }).ToList();
-        }
+      
     }
 }

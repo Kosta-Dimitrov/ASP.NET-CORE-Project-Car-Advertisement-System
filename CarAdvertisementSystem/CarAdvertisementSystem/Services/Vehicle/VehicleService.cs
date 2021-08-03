@@ -17,14 +17,16 @@
             string brand,
             string searchTerm,
             VehicleSorting sorting,
+            string type,
             int currentPage,
             int vehiclesPerPage)
         {
             List<Vehicle> vehiclesQuery = data.
-                Vehicles.
-                Include(v => v.Brand).
-                Include(v => v.Fuel).
-                ToList();
+                Vehicles
+                .Include(v => v.Brand)
+                .Include(v => v.Fuel)
+                .Include(v=>v.Type)
+                .ToList();
 
             if (!string.IsNullOrWhiteSpace(brand))
             {
@@ -38,6 +40,12 @@
                     (v => (v.Brand.Name.ToLower() + " " + v.Model.ToLower()).Contains(searchTerm.ToLower()) ||
                     v.Description.ToLower().Contains(searchTerm.ToLower())).
                     ToList();
+            }
+            if (!string.IsNullOrWhiteSpace(type))
+            {
+                vehiclesQuery = vehiclesQuery
+                    .Where(v => v.Type.Name.ToLower() == type.ToLower())
+                    .ToList();
             }
             switch (sorting)
             {
@@ -73,14 +81,14 @@
 
         }
 
-        public bool Edit(int id, string description, int brandId, string color, int doors, int fuelId, int horsePower, string imageUrl, int kilometers, string model, int price, int typeId, int year,int sellerId)
+        public bool Edit(int id, string description, int brandId, string color, int doors, int fuelId, int horsePower, string imageUrl, int kilometers, string model, int price, int typeId, int year,int sellerId,bool isAdmin)
         {
             Vehicle vehicle = this.data.Vehicles.Find(id);
             if (vehicle==null)
             {
                 return false;
             }
-            if (sellerId!=vehicle.SellerId)
+            if (sellerId != vehicle.SellerId && !isAdmin)
             {
                 return false;
             }
@@ -125,6 +133,12 @@
                        Id = t.Id,
                        Name = t.Name
                    }).ToList();
+
+        public List<string> GetTypesByName()
+            => data
+            .Types
+            .Select(t => t.Name)
+            .ToList();
 
         public VehicleInfoServiceModel Info(int id)
         => this.data.Vehicles.Where(v=>v.Id==id).Select(v => new VehicleInfoServiceModel

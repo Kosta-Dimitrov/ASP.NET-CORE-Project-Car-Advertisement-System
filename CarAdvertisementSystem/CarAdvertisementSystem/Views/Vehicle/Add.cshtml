@@ -1,7 +1,12 @@
 ﻿@model AddVehicleFormModel
 
 
-@{ 
+@{
     ViewData["Title"] = "Add new vehicle";
 }
-<partial name="_VehicleFormPartial"  model="@Model"/>
+<partial name="_VehicleFormPartial" model="@Model" />
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

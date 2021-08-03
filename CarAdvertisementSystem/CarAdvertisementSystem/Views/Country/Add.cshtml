@@ -13,5 +13,9 @@
             <span asp-validation-for="Name" class="small text-danger"></span>
             <input class="btn btn-primary mt-3" type="submit" value="Save" />
         </div>
-   </div>
+    </div>
 </form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

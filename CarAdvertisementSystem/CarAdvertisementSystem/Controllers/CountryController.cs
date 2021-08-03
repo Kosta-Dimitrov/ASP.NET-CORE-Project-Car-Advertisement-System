@@ -15,7 +15,7 @@
         public CountryController(CarAdvertisementDbContext data)
             => this.data = data;
 
-        [Authorize]
+        [Authorize(Roles ="Administrator")]
         public IActionResult Add()
             => View();
 

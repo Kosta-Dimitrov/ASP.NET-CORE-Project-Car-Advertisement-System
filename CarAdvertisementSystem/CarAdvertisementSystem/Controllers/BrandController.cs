@@ -43,8 +43,9 @@
                         Name = newBrand.Name,
                         CountryId = newBrand.CountryId
                     });
-                    return RedirectToAction("All", "Brand");
+                    data.SaveChanges();
                 }
+                return RedirectToAction("All", "Brand");
             }
             newBrand.Countries = this.AllCountries();
             return View(newBrand);
@@ -72,6 +73,7 @@
             return this.data
                 .Brands
                 .Include(b => b.Country)
+                .Include(b=>b.Vehicles)
                 .ToList();
         }
 

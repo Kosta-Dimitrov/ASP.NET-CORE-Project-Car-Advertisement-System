@@ -9,6 +9,7 @@
             string brand,
             string searchTerm,
             VehicleSorting sorting,
+            string type,
             int currentPage,
             int vehiclesPerPage);
         bool IsBySeller(int id,int vehicleId);
@@ -23,6 +24,7 @@
         bool ValidBrand(int id);
         bool ValidFuel(int id);
         bool ValidType(int id);
-        bool Edit(int id, string description, int brandId, string color, int doors, int fuelId, int horsePower, string imageUrl, int kilometers, string model, int price, int typeId, int year, int sellerId);
+        bool Edit(int id, string description, int brandId, string color, int doors, int fuelId, int horsePower, string imageUrl, int kilometers, string model, int price, int typeId, int year, int sellerId,bool isAdmin);
+        List<string> GetTypesByName();
     }
 }
