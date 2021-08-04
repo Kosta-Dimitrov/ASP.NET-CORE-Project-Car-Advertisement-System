@@ -7,6 +7,8 @@
     using CarAdvertisementSystem.Services.Vehicle;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Caching.Memory;
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Security.Claims;
@@ -15,22 +17,32 @@
     {
         private IVehicleService vehicleService;
         private ISellerService sellerService;
+        private IMemoryCache cache;
         private CarAdvertisementDbContext data;
 
-        public VehicleController(IVehicleService vehicleService, 
+        public VehicleController(IVehicleService vehicleService,
             CarAdvertisementDbContext data,
-            ISellerService sellerService)
+            ISellerService sellerService, 
+            IMemoryCache cache)
         {
             this.vehicleService = vehicleService;
             this.data = data;
             this.sellerService = sellerService;
+            this.cache = cache;
         }
 
         public IActionResult All([FromQuery]AllVehiclesViewModel model)
         {
-            
+            List<string> latestTypes =this.cache.Get<List<string>>("LatestTypesAll");
+            if (latestTypes==null)
+            {
+                latestTypes = vehicleService.GetTypesByName();
+                MemoryCacheEntryOptions cacheOptions = new MemoryCacheEntryOptions()
+                    .SetAbsoluteExpiration(TimeSpan.FromDays(31));
+                this.cache.Set("LatestTypesAll",latestTypes, cacheOptions);
+            }
+            model.Types = latestTypes;
             model.Brands = this.vehicleService.VehicleBrands();
-            model.Types = this.vehicleService.GetTypesByName();
             VehicleQueryServiceModel queryResult = this.vehicleService
                 .All(model.Brand,
                 model.SearchTerm,
@@ -62,11 +74,29 @@
             {
                 return RedirectToAction("Create","Seller");
             }
+
+            List<VehicleTypeViewModel> latestTypes = this.cache.Get<List<VehicleTypeViewModel>>("LatestTypes");
+            if (latestTypes == null)
+            {
+                latestTypes = vehicleService.GetTypes().ToList();
+                MemoryCacheEntryOptions cacheOptions = new MemoryCacheEntryOptions()
+                    .SetAbsoluteExpiration(TimeSpan.FromDays(31));
+                this.cache.Set("LatestTypes", latestTypes, cacheOptions);
+            }
+            List<VehicleFuelViewModel> latestFuels = this.cache.Get<List<VehicleFuelViewModel>>("LatestFuels");
+            if (latestFuels==null)
+            {
+                latestFuels = this.vehicleService.GetFuels().ToList();
+                MemoryCacheEntryOptions cacheOptions = new MemoryCacheEntryOptions()
+                    .SetAbsoluteExpiration(TimeSpan.FromDays(31));
+                this.cache.Set("LatestFuels", latestFuels, cacheOptions);
+            }
+
             return View(new AddVehicleFormModel
             {
-                Types = this.vehicleService.GetTypes(),
+                Types = latestTypes,
                 Brands = this.vehicleService.GetBrands(),
-                Fuels = this.vehicleService.GetFuels()
+                Fuels = latestFuels
             });
         }
 
@@ -105,11 +135,29 @@
             {
                 ModelState.AddModelError(nameof(vehicle.Doors), $"Vehicle of type {vehicle.Types.ElementAt(vehicle.TypeId-1).Name} must have at least 1 door");
             }
+
+            List<VehicleTypeViewModel> latestTypes = this.cache.Get<List<VehicleTypeViewModel>>("LatestTypes");
+            if (latestTypes == null)
+            {
+                latestTypes = vehicleService.GetTypes().ToList();
+                MemoryCacheEntryOptions cacheOptions = new MemoryCacheEntryOptions()
+                    .SetAbsoluteExpiration(TimeSpan.FromDays(31));
+                this.cache.Set("LatestTypes", latestTypes, cacheOptions);
+            }
+            List<VehicleFuelViewModel> latestFuels = this.cache.Get<List<VehicleFuelViewModel>>("LatestFuels");
+            if (latestFuels == null)
+            {
+                latestFuels = this.vehicleService.GetFuels().ToList();
+                MemoryCacheEntryOptions cacheOptions = new MemoryCacheEntryOptions()
+                    .SetAbsoluteExpiration(TimeSpan.FromDays(31));
+                this.cache.Set("LatestFuels", latestTypes, cacheOptions);
+            }
+
             if (!ModelState.IsValid)
             {
                 vehicle.Brands = this.vehicleService.GetBrands();
-                vehicle.Types = this.vehicleService.GetTypes();
-                vehicle.Fuels = this.vehicleService.GetFuels();
+                vehicle.Types = latestTypes;
+                vehicle.Fuels = latestFuels;
                 return View(vehicle);
             }
             else
@@ -200,6 +248,25 @@
             {
                 ModelState.AddModelError(nameof(vehicle.Doors), $"Vehicle of type {vehicle.Types.ElementAt(vehicle.TypeId - 1).Name} must have at least 1 door");
             }
+
+            List<VehicleTypeViewModel> latestTypes = this.cache.Get<List<VehicleTypeViewModel>>("LatestTypesEdit");
+            if (latestTypes == null)
+            {
+                latestTypes = vehicleService.GetTypes().ToList();
+                MemoryCacheEntryOptions cacheOptions = new MemoryCacheEntryOptions()
+                    .SetAbsoluteExpiration(TimeSpan.FromDays(31));
+                this.cache.Set("LatestTypesEdit", latestTypes, cacheOptions);
+            }
+            List<VehicleFuelViewModel> latestFuels = this.cache.Get<List<VehicleFuelViewModel>>("LatestFuelsEdit");
+            if (latestFuels == null)
+            {
+                latestFuels = this.vehicleService.GetFuels().ToList();
+                MemoryCacheEntryOptions cacheOptions = new MemoryCacheEntryOptions()
+                    .SetAbsoluteExpiration(TimeSpan.FromDays(31));
+                this.cache.Set("LatestFuelsEdit", latestTypes, cacheOptions);
+            }
+
+
             if (!ModelState.IsValid)
             {
                 vehicle.Brands = this.vehicleService.GetBrands();
