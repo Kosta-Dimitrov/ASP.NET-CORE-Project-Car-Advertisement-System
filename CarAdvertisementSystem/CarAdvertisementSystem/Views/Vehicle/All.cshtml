@@ -2,6 +2,20 @@
 @{
     ViewData["Title"] = "All vehicles";
 }
+@{
+    if (this.TempData.ContainsKey("Success"))
+    {
+        <div class="alert alert-success" role="alert">
+            @TempData["Success"]
+        </div>
+    }
+    else if (this.TempData.ContainsKey("NotSuccess"))
+    {
+        <div class="alert alert-danger" role="alert">
+            @TempData["NotSuccess"]
+        </div>
+    }
+}
 
 <form method="get">
     <div class="row">
@@ -54,11 +68,11 @@
         </div>
     </div>
 </form>
-@{ 
+@{
     VehicleService service;
     List<VehicleServiceModel> vehicles = Model
         .Vehicles
-        .Select(v=>new VehicleServiceModel
+        .Select(v => new VehicleServiceModel
         {
             Id = v.Id,
             BrandName = v.Brand,
@@ -95,7 +109,7 @@
         &nbsp;
 
         <li class="page-item">
-            <a class="btn btn-primary page-link @(shouldButtonBeDisabled ? "disabled" : string.Empty)" 
+            <a class="btn btn-primary page-link @(shouldButtonBeDisabled ? "disabled" : string.Empty)"
                asp-controller="Vehicle"
                asp-action="All"
                asp-route-currentPage="@(Model.CurrentPage+1)"

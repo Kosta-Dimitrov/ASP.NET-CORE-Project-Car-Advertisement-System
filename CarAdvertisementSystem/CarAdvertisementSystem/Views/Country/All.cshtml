@@ -1,6 +1,23 @@
 ﻿@model AllCountriesViewModel
 @{
+    ViewData["Title"] = "All countries";
+}
+@{
     int counter = 0;
+}
+@{
+    if (this.TempData.ContainsKey("Success"))
+    {
+        <div class="alert alert-success" role="alert">
+            @TempData["Success"]
+        </div>
+    }
+    else if (this.TempData.ContainsKey("NotSuccess"))
+    {
+        <div class="alert alert-danger" role="alert">
+            @TempData["NotSuccess"]
+        </div>
+    }
 }
 <table class="table">
     <thead>
@@ -13,14 +30,14 @@
     <tbody>
         @foreach (var country in Model.Countries)
         {
-           <tr>
-             <th scope="row">@(counter+1)</th>
-             <td>@(country.Key)</td>
-             <td>@(country.Value)</td>
-                  @{
-                      counter++;
-                  }
-           </tr>
+            <tr>
+                <th scope="row">@(counter+1)</th>
+                <td>@(country.Key)</td>
+                <td>@(country.Value)</td>
+                @{
+                    counter++;
+                }
+            </tr>
         }
     </tbody>
 </table>

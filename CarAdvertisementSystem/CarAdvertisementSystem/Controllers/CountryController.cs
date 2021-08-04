@@ -40,7 +40,9 @@
                         .Countries
                         .Add(countryData);
                     data.SaveChanges();
+                    this.TempData["Success"] = $"{newCountry.Name} was added";
                 }
+                this.TempData["NotSuccess"] = $"{newCountry.Name} is already in";
                 return RedirectToAction("All", "Country");
             }
         }

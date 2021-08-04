@@ -225,14 +225,17 @@
                 isAdmin);
             if (!isVehicleEdited)
             {
+                TempData["NotSuccess"] = "You could not edit the vehicle";
                 return BadRequest();
             }
             else if (User.IsInRole("Administrator"))
             {
+                this.TempData["Success"] = $"Successfully edited";
                 return RedirectToAction("All", "Vehicle");
             }
             else
             {
+                this.TempData["Success"] = $"Successfully edited";
                 return RedirectToAction("Mine", "Vehicle");
             }
         }

@@ -184,17 +184,17 @@
                .Any(t => t.Id == id);
 
         public List<string> VehicleBrands()
-            => data.
-                Brands.
-                Select(b => b.Name).
-                OrderBy(b => b).
-                ToList();
+            => data
+                .Brands
+                .Select(b => b.Name)
+                .OrderBy(b => b)
+                .ToList();
 
         public List<string> VehicleFuels()
-            => data.
-                Fuels.
-                Select(f => f.Name).
-                ToList();
+            => data
+                .Fuels
+                .Select(f => f.Name)
+                .ToList();
 
         public List<VehicleServiceModel> VehiclesByUser(string userId)
             => this.data

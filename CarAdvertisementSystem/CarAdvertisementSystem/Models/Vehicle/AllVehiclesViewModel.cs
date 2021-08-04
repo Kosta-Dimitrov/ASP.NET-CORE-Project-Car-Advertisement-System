@@ -12,7 +12,6 @@
 
         public List<string> Types { get; set; }
         public string Type { get; set; }
-       // public List<string> Fuels { get; set; }
 
         [Display(Name ="Search")]
         public string SearchTerm { get; set; }

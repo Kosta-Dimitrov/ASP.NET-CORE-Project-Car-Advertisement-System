@@ -1,28 +1,45 @@
 ﻿@model List<BrandViewModel>
 @{
+    ViewData["Title"] = "All brands";
+}
+@{
     int counter = 0;
 }
-<table class="table">
-    <thead>
-        <tr>
-            <th scope="col">#</th>
-            <th scope="col">Brand</th>
-            <th scope="col">Country</th>
-            <th scope="col">Vehicles</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var brand in Model)
-        {
+@{
+    if (this.TempData.ContainsKey("Success"))
+    {
+        <div class="alert alert-success" role="alert">
+            @TempData["Success"]
+        </div>
+    }
+    else if (this.TempData.ContainsKey("NotSuccess"))
+    {
+        <div class="alert alert-danger" role="alert">
+            @TempData["NotSuccess"]
+        </div>
+    }
+}
+    <table class="table">
+        <thead>
             <tr>
-                <th scope="row">@(counter+1)</th>
-                <td>@brand.Name</td>
-                <td>@brand.CountryName</td>
-                <td>@brand.VehiclesCount</td>
-                @{ 
-                    counter++;
-                }
+                <th scope="col">#</th>
+                <th scope="col">Brand</th>
+                <th scope="col">Country</th>
+                <th scope="col">Vehicles</th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var brand in Model)
+            {
+                <tr>
+                    <th scope="row">@(counter+1)</th>
+                    <td>@brand.Name</td>
+                    <td>@brand.CountryName</td>
+                    <td>@brand.VehiclesCount</td>
+                    @{
+                        counter++;
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>

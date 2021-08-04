@@ -43,7 +43,12 @@
                         Name = newBrand.Name,
                         CountryId = newBrand.CountryId
                     });
+                    this.TempData["Success"] = $"{newBrand.Name} is added";
                     data.SaveChanges();
+                }
+                else
+                {
+                    this.TempData["NotSuccess"] = $"{newBrand.Name} is already in";
                 }
                 return RedirectToAction("All", "Brand");
             }

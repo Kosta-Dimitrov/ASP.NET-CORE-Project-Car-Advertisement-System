@@ -3,6 +3,20 @@
     ViewData["Title"] = "My vehicles";
     ViewBag.AllowEditing = true;
 }
+@{
+    if (this.TempData.ContainsKey("Success"))
+    {
+        <div class="alert alert-success" role="alert">
+            @TempData["Success"]
+        </div>
+    }
+    else if (this.TempData.ContainsKey("NotSuccess"))
+    {
+        <div class="alert alert-danger" role="alert">
+            @TempData["NotSuccess"]
+        </div>
+    }
+}
 @if (!Model.Any())
 {
     <h2 class="text-center">You do not have any vehicles</h2>
