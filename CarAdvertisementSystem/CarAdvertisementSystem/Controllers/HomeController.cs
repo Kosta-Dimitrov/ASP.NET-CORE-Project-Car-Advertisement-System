@@ -1,11 +1,9 @@
 ﻿namespace CarAdvertisementSystem.Controllers
 {
     using CarAdvertisementSystem.Data;
-    using CarAdvertisementSystem.Models;
     using CarAdvertisementSystem.Models.Home;
     using Microsoft.AspNetCore.Mvc;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.Linq;
     public class HomeController : Controller
     {

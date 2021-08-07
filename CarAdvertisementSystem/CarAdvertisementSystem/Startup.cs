@@ -25,6 +25,7 @@ namespace CarAdvertisementSystem
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
             services.AddDatabaseDeveloperPageExceptionFilter();
+            services.AddMemoryCache();
 
             services.AddDefaultIdentity<User>(options =>
             {

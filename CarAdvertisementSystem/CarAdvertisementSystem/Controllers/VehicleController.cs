@@ -7,6 +7,7 @@
     using CarAdvertisementSystem.Services.Vehicle;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Caching.Memory;
     using System;
     using System.Collections.Generic;
@@ -19,6 +20,38 @@
         private ISellerService sellerService;
         private IMemoryCache cache;
         private CarAdvertisementDbContext data;
+
+
+        public IActionResult Details(int id)
+        {
+            Vehicle vehicle = this.data
+                     .Vehicles
+                    .Include(v => v.Brand)
+                    .Include(v => v.Fuel)
+                    .Include(v => v.Type)
+                     .Where(v=>v.Id==id)
+                     .FirstOrDefault();
+            if (vehicle==null)
+            {
+                return BadRequest();
+            }
+            VehicleDetailsViewModel model =new VehicleDetailsViewModel
+            {
+                FuelName=vehicle.Fuel.Name,
+                HorsePower=vehicle.HorsePower,
+                BrandName=vehicle.Brand.Name,
+                Color=vehicle.Color,
+                Description=vehicle.Description,
+                Doors=vehicle.Doors,
+                ImageUrl=vehicle.ImageUrl,
+                Kilometers=vehicle.Kilometers,
+                Model=vehicle.Model,
+                Price=vehicle.Price,
+                TypeName=vehicle.Type.Name,
+                Year=vehicle.Year
+            };
+            return View(model);
+        }
 
         public VehicleController(IVehicleService vehicleService,
             CarAdvertisementDbContext data,
@@ -33,13 +66,13 @@
 
         public IActionResult All([FromQuery]AllVehiclesViewModel model)
         {
-            List<string> latestTypes =this.cache.Get<List<string>>("LatestTypesAll");
+            List<string> latestTypes =this.cache.Get<List<string>>("LatestTypesAllAction");
             if (latestTypes==null)
             {
                 latestTypes = vehicleService.GetTypesByName();
                 MemoryCacheEntryOptions cacheOptions = new MemoryCacheEntryOptions()
                     .SetAbsoluteExpiration(TimeSpan.FromDays(31));
-                this.cache.Set("LatestTypesAll",latestTypes, cacheOptions);
+                this.cache.Set("LatestTypesAllAction", latestTypes, cacheOptions);
             }
             model.Types = latestTypes;
             model.Brands = this.vehicleService.VehicleBrands();
