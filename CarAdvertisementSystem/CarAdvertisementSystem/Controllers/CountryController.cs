@@ -8,6 +8,7 @@
     using System.Linq;
     using System.Collections.Generic;
 
+    [Authorize(Roles = "Administrator")]
     public class CountryController:Controller
     {
         private CarAdvertisementDbContext data;
@@ -15,11 +16,11 @@
         public CountryController(CarAdvertisementDbContext data)
             => this.data = data;
 
-        [Authorize(Roles ="Administrator")]
+        [Authorize(Roles = "Administrator")]
         public IActionResult Add()
             => View();
 
-        [Authorize(Roles ="Administrator")]
+        [Authorize(Roles = "Administrator")]
         [HttpPost]
         public IActionResult Add(AddCountryFormModel newCountry)
         {
@@ -46,6 +47,8 @@
                 return RedirectToAction("All", "Country");
             }
         }
+
+        [AllowAnonymous]
         public IActionResult All()
         {
             List<CountryViewModel> allCountries = this.AllCountries();

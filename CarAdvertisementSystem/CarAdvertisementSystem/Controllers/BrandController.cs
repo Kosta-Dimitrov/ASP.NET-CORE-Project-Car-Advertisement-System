@@ -55,7 +55,7 @@
             newBrand.Countries = this.AllCountries();
             return View(newBrand);
         }
-
+        [AllowAnonymous]
         public IActionResult All()
         {
             List<BrandViewModel> viewModel = new List<BrandViewModel>();
