@@ -26,6 +26,7 @@
                 .Include(v => v.Brand)
                 .Include(v => v.Fuel)
                 .Include(v=>v.Type)
+                .Where(v=>v.IsDeleted==false)
                 .ToList();
 
             if (!string.IsNullOrWhiteSpace(brand))
@@ -54,10 +55,10 @@
                 case VehicleSorting.Year: vehiclesQuery = vehiclesQuery.OrderByDescending(v => v.Year).ToList(); break;
                 default: break;
             }
-            List<VehicleListingViewModel> vehicles = vehiclesQuery.
-                Skip((currentPage - 1) *vehiclesPerPage).
-                Take(vehiclesPerPage).
-                Select(v => new VehicleListingViewModel
+            List<VehicleListingViewModel> vehicles = vehiclesQuery
+                .Skip((currentPage - 1) *vehiclesPerPage)
+                .Take(vehiclesPerPage)
+                .Select(v => new VehicleListingViewModel
                 {
                     Fuel = v.Fuel.Name,
                     Brand = v.Brand.Name,
@@ -83,12 +84,16 @@
 
         public bool Edit(int id, string description, int brandId, string color, int doors, int fuelId, int horsePower, string imageUrl, int kilometers, string model, int price, int typeId, int year,int sellerId,bool isAdmin)
         {
-            Vehicle vehicle = this.data.Vehicles.Find(id);
+            Vehicle vehicle = this.data.Vehicles.Where(v=>v.IsDeleted==false&&v.Id==id).FirstOrDefault();
             if (vehicle==null)
             {
                 return false;
             }
             if (sellerId != vehicle.SellerId && !isAdmin)
+            {
+                return false;
+            }
+            if (vehicle.IsDeleted==true)
             {
                 return false;
             }
@@ -141,7 +146,7 @@
             .ToList();
 
         public VehicleInfoServiceModel Info(int id)
-        => this.data.Vehicles.Where(v=>v.Id==id).Select(v => new VehicleInfoServiceModel
+        => this.data.Vehicles.Where(v=>v.Id==id&&v.IsDeleted==false).Select(v => new VehicleInfoServiceModel
         {
             FuelId=v.FuelId,
             FuelName=v.Fuel.Name,
@@ -199,7 +204,7 @@
         public List<VehicleServiceModel> VehiclesByUser(string userId)
             => this.data
             .Vehicles
-            .Where(v => v.Seller.UserId == userId)
+            .Where(v => v.Seller.UserId == userId&&v.IsDeleted==false)
             .Select(v => new VehicleServiceModel
             {
                 FuelName = v.Fuel.Name,

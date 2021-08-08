@@ -13,7 +13,7 @@
                         <div>@vehicle.HorsePower horsepower</div>
                         <div>@vehicle.FuelName</div>
                     </p>
-                    <a asp-controller="Vehicle" asp-action="Details" asp-route-id="@vehicle.Id" class="btn btn-primary">Full information</a>
+                    <a asp-controller="Vehicle" asp-action="Details" asp-route-id="@vehicle.Id" asp-route-information="@(vehicle.BrandName+"-"+vehicle.Model)" class="btn btn-primary">Full information</a>
                     @if (ViewBag.AllowEditing == true||User.IsInRole("Administrator"))
                     {
                         <a asp-controller="Vehicle" asp-action="Edit" asp-route-id="@vehicle.Id" class="btn btn-info">Edit</a>

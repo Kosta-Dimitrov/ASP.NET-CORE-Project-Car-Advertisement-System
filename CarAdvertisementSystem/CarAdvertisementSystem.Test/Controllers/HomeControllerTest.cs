@@ -17,5 +17,14 @@
             .View(view => view.WithModelOfType<IndexViewModel>());
 
         }
+
+        [Fact]
+        public void IndexReturnsViewWithRightModelAndData()
+           => MyController<HomeController>
+            .Instance()
+            .Calling(c => c.Index())
+            .ShouldReturn()
+            .View(view => view
+                   .WithModelOfType<IndexViewModel>());
     }
 }

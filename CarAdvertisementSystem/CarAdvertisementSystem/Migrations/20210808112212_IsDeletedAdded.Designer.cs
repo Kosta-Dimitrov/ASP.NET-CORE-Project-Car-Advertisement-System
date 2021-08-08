@@ -4,14 +4,16 @@ using CarAdvertisementSystem.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CarAdvertisementSystem.Migrations
 {
     [DbContext(typeof(CarAdvertisementDbContext))]
-    partial class CarAdvertisementDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210808112212_IsDeletedAdded")]
+    partial class IsDeletedAdded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

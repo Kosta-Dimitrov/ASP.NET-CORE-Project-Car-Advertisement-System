@@ -64,7 +64,7 @@
             {
                 Name = b.Name,
                 CountryName = b.Country.Name,
-                VehiclesCount = b.Vehicles.Count()
+                VehiclesCount = b.Vehicles.Where(v=>v.IsDeleted==false).Count()
             }));
             viewModel=viewModel
                 .OrderBy(b => b.Name)

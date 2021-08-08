@@ -29,7 +29,7 @@
              .ToList();
 
             int totalUsers = this.data.Sellers.Count();
-            int totalVehicles = this.data.Vehicles.Count();
+            int totalVehicles = this.data.Vehicles.Where(c=>c.IsDeleted==false).Count();
             int totalBrands =this.data.Brands.Count();
             IndexViewModel viewModel = new IndexViewModel
             { 

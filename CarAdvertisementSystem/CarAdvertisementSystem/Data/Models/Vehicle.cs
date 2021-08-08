@@ -38,5 +38,7 @@ namespace CarAdvertisementSystem.Data.Models
         public int SellerId { get; set; }
         public Seller Seller { get; set; }
 
+        public bool IsDeleted { get; set; }
+
     }
 }

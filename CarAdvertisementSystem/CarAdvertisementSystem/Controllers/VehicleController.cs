@@ -21,17 +21,21 @@
         private IMemoryCache cache;
         private CarAdvertisementDbContext data;
 
-
-        public IActionResult Details(int id)
+        [AllowAnonymous]
+        public IActionResult Details(int id,string information)
         {
             Vehicle vehicle = this.data
                      .Vehicles
                     .Include(v => v.Brand)
                     .Include(v => v.Fuel)
                     .Include(v => v.Type)
-                     .Where(v=>v.Id==id)
+                     .Where(v=>v.Id==id&&v.IsDeleted==false)
                      .FirstOrDefault();
             if (vehicle==null)
+            {
+                return BadRequest();
+            }
+            if (information!=vehicle.Brand.Name+"-"+vehicle.Model)
             {
                 return BadRequest();
             }
@@ -64,6 +68,7 @@
             this.cache = cache;
         }
 
+        [AllowAnonymous]
         public IActionResult All([FromQuery]AllVehiclesViewModel model)
         {
             List<string> latestTypes =this.cache.Get<List<string>>("LatestTypesAllAction");
@@ -330,12 +335,12 @@
             }
             else if (User.IsInRole("Administrator"))
             {
-                this.TempData["Success"] = $"Successfully edited";
+                this.TempData["Success"] = "Successfully edited";
                 return RedirectToAction("All", "Vehicle");
             }
             else
             {
-                this.TempData["Success"] = $"Successfully edited";
+                this.TempData["Success"] = "Successfully edited";
                 return RedirectToAction("Mine", "Vehicle");
             }
         }
