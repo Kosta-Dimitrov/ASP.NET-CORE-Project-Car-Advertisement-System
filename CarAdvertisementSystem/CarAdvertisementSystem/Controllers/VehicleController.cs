@@ -82,7 +82,8 @@
             model.Types = latestTypes;
             model.Brands = this.vehicleService.VehicleBrands();
             VehicleQueryServiceModel queryResult = this.vehicleService
-                .All(model.Brand,
+                .All(
+                model.Brand,
                 model.SearchTerm,
                 model.Sorting,
                 model.Type,
@@ -252,7 +253,31 @@
                 Fuels=vehicleService.GetFuels(),
                 Types=vehicleService.GetTypes()
             });
+        }
 
+        [Authorize]
+        public IActionResult Delete(int id,string information)
+        {
+            string userId = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            Vehicle vehicle = this.data
+                .Vehicles
+                .Where(v => v.Id == id && v.IsDeleted == false)
+               .Include(v=>v.Brand)
+               .Include(v=>v.Seller)
+                .FirstOrDefault();
+            if (vehicle==null)
+            {
+                return BadRequest();
+            }
+            if (information!=vehicle.Brand.Name+"-"+vehicle.Model)
+            {
+                return BadRequest();
+            }
+            if (!User.IsInRole("Administrator")&&vehicle.Seller.UserId != userId)
+            {
+                return BadRequest();
+            }
+            return View();
         }
 
         [HttpPost]

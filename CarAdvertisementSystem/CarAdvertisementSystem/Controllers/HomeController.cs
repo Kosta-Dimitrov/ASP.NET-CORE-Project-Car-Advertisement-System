@@ -16,6 +16,7 @@
         {
             List<VehicleIndexViewModel> vehicles = this.data
              .Vehicles
+             .Where(v=>v.IsDeleted==false)
              .OrderByDescending(v => v.Id)
              .Select(v => new VehicleIndexViewModel
              {

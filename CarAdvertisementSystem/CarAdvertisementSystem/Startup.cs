@@ -73,6 +73,10 @@ namespace CarAdvertisementSystem
                     name: "Vehicle Details",
                     pattern: "/Vehicle/Details/{id}/{information}",
                     defaults: new { controller = "Vehicle", action = "Details" });
+                endpoints.MapControllerRoute(
+                    name: "Vehicle Delete",
+                    pattern: "/Vehicle/Details/{id}/{information}",
+                    defaults: new { controller = "Vehicle", action = "Delete" });
                 endpoints.MapRazorPages();
             });
 
