@@ -7,6 +7,7 @@
     using System.Linq;
     using CarAdvertisementSystem.Data.Models;
     using CarAdvertisementSystem.Test.Data;
+    using System.Collections.Generic;
 
     public class CountryControllerTest
     {
@@ -42,21 +43,39 @@
                 .ShouldReturn()
                 .View(view=>view.WithModelOfType<AllCountriesViewModel>());
         }
-        //[Fact]
-        //public void CountryAllReturnsAllCountries()
-        //{
-        //    MyController<CountryController>
-        //        .Instance()
-        //        .WithData(AllCountryViewModelData.Return)
-        //        .Calling(c => c.All())
-        //        .ShouldReturn()
-        //        .View(view => view
-        //                .WithModelOfType<AllCountriesViewModel>()
-        //                .Passing(model => 
-        //                {
-        //                    Assert.Equal(model.Countries.Count, 4);
-        //                }));
-        //}
+        [Fact]
+        public void CountryAllReturnsAllCountries()
+        {
+            MyController<CountryController>
+                .Instance()
+                .WithData(new List<Country>
+                {
+                    new Country
+                    {
+                        Name="test1"
+                    },
+                    new Country
+                    {
+                        Name="test2"
+                    },
+                    new Country
+                    {
+                        Name="test3"
+                    },
+                    new Country
+                    {
+                        Name="test4"
+                    }
+                })
+                .Calling(c => c.All())
+                .ShouldReturn()
+                .View(view => view
+                        .WithModelOfType<AllCountriesViewModel>()
+                        .Passing(model =>
+                        {
+                            Assert.Equal(model.Countries.Count, 4);
+                        }));
+        }
 
         [Theory]
         [InlineData("TestCountry")]

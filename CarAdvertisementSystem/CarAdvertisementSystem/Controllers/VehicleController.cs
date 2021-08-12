@@ -277,7 +277,17 @@
             {
                 return BadRequest();
             }
-            return View();
+            vehicle.IsDeleted = true;
+            this.data.SaveChanges();
+            this.TempData.Add("Successfully deleted vehicle", $"Successfully deleted {vehicle.Brand.Name} {vehicle.Model}");
+            if (User.IsInRole("Administrator"))
+            {
+                return RedirectToAction("All","Vehicle");
+            }
+            else
+            {
+                return RedirectToAction("Mine", "Vehicle");
+            }
         }
 
         [HttpPost]

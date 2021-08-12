@@ -17,13 +17,38 @@
         {
             MyController<VehicleController>
                 .Instance()
-                .Calling(c => c.Details(id))
+                .Calling(c => c.Details(id,"test"))
                 .ShouldHave()
                 .ActionAttributes(attributes => attributes
                                     .AllowingAnonymousRequests())
                 .AndAlso()
                 .ShouldReturn()
                 .BadRequest();
+        }
+
+        [Fact]
+        public void DetailsShouldReturnView()
+        {
+            MyController<VehicleController>
+                .Instance()
+                .WithData(new List<Vehicle>
+                {
+                    new Vehicle
+                    {
+                        Id=1,
+                        Brand=new Brand{Name="test"},
+                        Model="test",
+                        IsDeleted=false
+                    } 
+                })
+                .Calling(c => c.Details(1, "test-test"))
+                .ShouldHave()
+                .ActionAttributes(attributes => attributes
+                                    .AllowingAnonymousRequests())
+                .AndAlso()
+                .ShouldReturn()
+                .View(view=>view.WithModelOfType<VehicleDetailsViewModel>());
+        
         }
 
         [Fact]
@@ -47,6 +72,37 @@
                 .Calling(c => c.Add())
                 .ShouldReturn()
                 .RedirectToAction("Create", "Seller");
+        }
+
+        [Fact]
+        public void DeleteShouldReturnBadRequestIfUserIsUnauthorised()
+        {
+            MyController<VehicleController>
+                .Instance()
+                .WithData(new List<Vehicle>
+                { 
+                    new Vehicle
+                    {
+                        Id=1,
+                        Model="testModel",
+                        Brand=new Brand{Name="testBrand"}
+                    }
+                })
+                .WithUser()
+                .Calling(c => c.Delete(1,"testModel-testBrand"))
+                .ShouldReturn()
+                .BadRequest();
+        }
+
+        [Fact]
+        public void DeleteShouldReturnBadRequestIfInvalidDataIsGiven()
+        {
+            MyController<VehicleController>
+                .Instance()
+                .WithUser(user => user.InRole("Administrator"))
+                .Calling(c => c.Delete(1,"test"))
+                .ShouldReturn()
+                .BadRequest();
         }
 
         [Fact]
@@ -128,22 +184,121 @@
                 .RedirectToAction("Create", "Seller");
         }
 
+        [Fact]
+        public void DeleteReturnsBadRequestIfVehicleIsNotDeletableAndHasAuthorisedAttribute()
+        {
+            MyController<VehicleController>
+                .Instance()
+                .WithUser()
+                .Calling(c => c.Delete(1, "testinfo"))
+                .ShouldHave()
+                .ActionAttributes(attributes=>attributes.RestrictingForAuthorizedRequests())
+                .AndAlso()
+                .ShouldReturn()
+                .BadRequest();
+        }
 
+        [Fact]
+        public void DeleteReturnsBadRequestIfInformationIsNotRight()
+        {
+            MyController<VehicleController>
+                .Instance()
+                .WithUser()
+                .WithData(new List<Vehicle>
+                {
+                    new Vehicle
+                    {
+                        Id=1,
+                        Brand=new Brand{Name="testBrand" },
+                        Model="testModel"
+                    }
+                })
+                .Calling(c => c.Delete(1, "testinfo"))
+                .ShouldReturn()
+                .BadRequest();
+        }
+        [Fact]
+        public void AddReturnsRedirectIfUserIsNotSellerOrAdmin()
+        {
+            MyController<VehicleController>
+                 .Instance()
+                 .WithUser()
+                 .Calling(c => c.Add())
+                 .ShouldReturn()
+                 .RedirectToAction("Create", "Seller");
+        }
+
+        [Fact]
+        public void AddReturnsViewWithCorrectModel()
+        {
+            MyController<VehicleController>
+                .Instance()
+                .WithUser(user=>user.InRole("Administrator"))
+                .Calling(c => c.Add())
+                .ShouldReturn()
+                .View(view=>view.WithModelOfType<AddVehicleFormModel>());
+        }
+        [Fact]
+        public void DeleteRedirectsToCorrectAction()
+        {
+            MyController<VehicleController>
+                .Instance()
+                .WithUser(user=>user.InRole("Administrator"))
+                .WithData(new List<Vehicle>
+                {
+                    new Vehicle
+                    {
+                        Id=1,
+                        Brand=new Brand{Name="test" },
+                        Model="test",
+                        IsDeleted=false,
+                        SellerId=1
+                    }
+                })
+                .WithData(new List<Seller>
+                {
+                    new Seller{Id=1}
+                })
+                .Calling(c => c.Delete(1, "test-test"))
+                .ShouldReturn()
+                .RedirectToAction("All", "Vehicle");
+        }
+
+        [Fact]
+        public void EditShouldReturnIfOtherPersonTriesToEditBadRequest()
+        {
+            MyController<VehicleController>
+               .Instance()
+               .WithUser()
+               .Calling(c => c.Edit(1, new AddVehicleFormModel()))
+               .ShouldReturn()
+               .BadRequest();
+        }
+        [Fact]
+        public void EditReturnsBadrequestIfVehicleHasIncorrectId()
+        {
+            MyController<VehicleController>
+                .Instance()
+                .WithUser(user => user.InRole("Administrator"))
+                .Calling(c => c.Edit(1))
+                .ShouldReturn()
+                .BadRequest();
+        }
         [Theory]
         [InlineData(
-            "testModel",
+          "testModel",
             "testDescription",
             10000,
             120,
-            3,
+            0,
             "testUrl",
             "testColor",
-            2016,
-            12300,
+            2009,
+            10000,
             3,
-            2,
+            3,
             1)]
-        public void AddPostShouldSaveTheDataAndRedirectCorrectly(
+        public void AddPostRedirectsIfDataIsNotValid(
             string model,
             string description,
             int price,
@@ -157,69 +312,30 @@
             int fuelId,
             int brandId)
         {
-
-            MyPipeline
-                .Configuration()
-                .ShouldMap(request => request
-                            .WithPath("/Vehicle/Add")
-                            .WithUser(user => user.InRole("Administrator"))
-                            .WithAntiForgeryToken()
-                            .WithMethod(HttpMethod.Post)
-                            .WithFormFields(new
-                            {
-                                Model = model,
-                                Description = description,
-                                HorsePower = horsePower,
-                                Doors = doors,
-                                ImageUrl = imageUrl,
-                                Price = price,
-                                Color = color,
-                                Year = year,
-                                Kilometers = kilometers,
-                                TypeId = typeId,
-                                FuelId = fuelId,
-                                BrandId = brandId
-                            }))
-               .To<VehicleController>(c => c.Add(
-                   new AddVehicleFormModel
-                   {
-                       BrandId = brandId,
-                       Model = model,
-                       Description = description,
-                       HorsePower = horsePower,
-                       Doors = doors,
-                       ImageUrl = imageUrl,
-                       Color = color,
-                       Year = year,
-                       Kilometers = kilometers,
-                       TypeId = typeId,
-                       FuelId = fuelId,
-                       Price=price
-                   }))
-               .Which()
-               .ShouldHave()
-               .ActionAttributes(attributes => attributes
-                    .RestrictingForHttpMethod(HttpMethod.Post)
-                    .RestrictingForAuthorizedRequests())
-                .ValidModelState()
-                .Data(data => data
-                    .WithSet<Vehicle>(vehicle => vehicle
-                        .Any(v =>
-                            v.Kilometers == kilometers
-                            && v.ImageUrl == imageUrl
-                            && v.Model == model
-                            && v.Price == price
-                            && v.TypeId == typeId
-                            && v.Year == year
-                            && v.BrandId == brandId
-                            && v.Description == description
-                            && v.HorsePower == horsePower
-                            && v.Doors == doors
-                            && v.Color == color
-                            && v.FuelId == fuelId)))
-                .AndAlso()
-                .ShouldReturn()
-                .RedirectToAction();
+            MyController<VehicleController>
+                .Instance()
+                .WithUser(user=>user.InRole("Administrator"))
+                .Calling(c => c.Add(new AddVehicleFormModel
+                {
+                    BrandId = brandId,
+                    Model = model,
+                    Description = description,
+                    HorsePower = horsePower,
+                    Doors = doors,
+                    ImageUrl = imageUrl,
+                    Color = color,
+                    Year = year,
+                    Kilometers = kilometers,
+                    TypeId = typeId,
+                    FuelId = fuelId,
+                    Price = price,
+                }))
+                .ShouldHave()
+                .ActionAttributes(attributes => attributes.RestrictingForAuthorizedRequests())
+               .AndAlso()
+               .ShouldReturn()
+               .View(view=>view.WithModelOfType<AddVehicleFormModel>());
         }
+
     }
 }

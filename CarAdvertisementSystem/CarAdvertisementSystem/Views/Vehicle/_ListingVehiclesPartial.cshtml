@@ -1,4 +1,10 @@
 ﻿@model List<VehicleServiceModel>
+    @if (this.TempData.ContainsKey("Successfully deleted vehicle"))
+    {
+        <div class="alert alert-danger" role="alert">
+            @TempData["Successfully deleted vehicle"]
+        </div>
+    }
 <div class="row">
     @foreach (var vehicle in Model)
     {
@@ -14,7 +20,7 @@
                         <div>@vehicle.FuelName</div>
                     </p>
                     <a asp-controller="Vehicle" asp-action="Details" asp-route-id="@vehicle.Id" asp-route-information="@(vehicle.BrandName+"-"+vehicle.Model)" class="btn btn-primary">Full information</a>
-                    @if (ViewBag.AllowEditing == true||User.IsInRole("Administrator"))
+                    @if (ViewBag.AllowEditing == true || User.IsInRole("Administrator"))
                     {
                         <a asp-controller="Vehicle" asp-action="Edit" asp-route-id="@vehicle.Id" class="btn btn-info">Edit</a>
                         <a asp-controller="Vehicle" asp-action="Delete" asp-route-id="@vehicle.Id" asp-route-information="@(vehicle.BrandName+"-"+vehicle.Model)" class="btn btn-danger">Delete</a>

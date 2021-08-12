@@ -1,4 +1,19 @@
 ﻿@model VehicleDetailsViewModel
-<div class="col-md-6 offset-3">
-    <img class="card-img-top img-fluid" src="@Model.ImageUrl" alt="Model.Brand  - Model.Year">
+<div class="col-md-10 offset-1">
+    <div class="card">
+        <img class="card-img-top" src="@Model.ImageUrl" alt="@Model.BrandName  - @Model.Year">
+        <div class="card-body">
+            <h5 class="card-title">@Model.BrandName  - @Model.Year</h5>
+            <p class="card-text">@Model.Description</p>
+        </div>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">@Model.Price $</li>
+            <li class="list-group-item">@Model.HorsePower horsepower</li>
+            <li class="list-group-item">@Model.Kilometers kilometers</li>
+            <li class="list-group-item">@Model.Color</li>
+            <li class="list-group-item">@Model.Doors doors</li>
+            <li class="list-group-item">@Model.FuelName</li>
+            <li class="list-group-item">Year of manifacturing: @Model.Year</li>
+        </ul>
+    </div>
 </div>

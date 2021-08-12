@@ -1,7 +1,6 @@
 ﻿namespace CarAdvertisementSystem.Services.Vehicle
 {
     using System.Collections.Generic;
-    using CarAdvertisementSystem.Data;
     using CarAdvertisementSystem.Models.Vehicle;
     public interface IVehicleService
     {
